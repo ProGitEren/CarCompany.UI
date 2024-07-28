@@ -1,0 +1,53 @@
+﻿@model UserViewModel
+
+<br>
+<br>
+<h2 class="title-section">Profile</h2>
+<hr />
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Profile Header -->
+        <div class="col-12">
+            <h2 class="profile-header text-center mb-4">User Profile</h2>
+        </div>
+
+        <!-- User Details -->
+        <div class="col-md-12">
+            <div class="profile-card">
+                <h4 class="margin-bottom-20">User Details</h4>
+                <ul>
+                    <li><strong>Email:</strong> @Model.Email</li>
+                    <li><strong>First Name:</strong> @Model.FirstName</li>
+                    <li><strong>Last Name:</strong> @Model.LastName</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Address Header -->
+        <div class="col-12">
+            <h2 class="profile-header text-center mb-4">Address Profile</h2>
+        </div>
+
+        <!-- Address Details -->
+        <div class="col-md-12">
+            <div class="profile-card">
+                <h4 class="margin-bottom-20">Address Details</h4>
+                <ul>
+                    <li><strong>Name:</strong> @Model.Address.name</li>
+                    <li><strong>City:</strong>  @Model.Address.city</li>
+                    <li><strong>State:</strong>  @Model.Address.state</li>
+                    <li><strong>Zipcode:</strong>  @Model.Address.zipcode</li>
+                    <li><strong>Country:</strong>  @Model.Address.country</li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+}  

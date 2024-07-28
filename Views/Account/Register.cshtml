@@ -1,0 +1,176 @@
+﻿@using CarCompany.UI.Models.ViewModels
+@model RegisterViewModel
+<br>
+<br>
+<h2 class="title-section">Register</h2>
+<hr />
+
+
+
+
+<form asp-action="Register" method="post">
+    @*  @if (TempData["errorMessage"] != null)
+    {
+    <div asp-validation-summary="All" class="text-danger"></div>
+    } *@
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    
+    <h3 class="header-section">User Information</h3>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Email">Email</label>
+        <input type="email" class="form-control" asp-for="Email" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="FirstName">First Name</label>
+        <input type="text" class="form-control" asp-for="FirstName" required />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="LastName">Last Name</label>
+        <input type="text" class="form-control" asp-for="LastName" required />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="birthtime">Birth Time</label>
+        <input type="date" class="form-control" asp-for="birthtime" required />
+        <span asp-validation-for="birthtime" class="text-danger"></span>
+
+    </div>
+
+
+
+    <div style="width:fit-content;height:10px;"></div>
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" *@ asp-for="Password">Password</label>
+        <div class="input-group">
+            <input asp-for="Password" type="password" class="form-control" id="passwordInput" required />
+            <div class="input-group-append">
+                <button style="border-color:#7c5a2c;background-color:rgb(32, 28, 54);box-shadow:2px 2px 2px inherit;margin:0;" class="btn btn-outline-secondary " type="button" id="showPasswordButton">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+        </div>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="ConfirmPassword">Confirm Password</label>
+        <div class="input-group">
+            <input asp-for="ConfirmPassword" type="password" class="form-control" id="confirmpasswordInput" required />
+            <div class="input-group-append">
+                <button style="border-color:#7c5a2c;background-color: rgb(32, 28, 54);box-shadow:2px 2px 2px inherit;margin:0;" class="btn btn-outline-secondary " type="button" id="confirmshowPasswordButton">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+
+            </div>
+        </div>
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <h3 class="header-section">Address Information</h3>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.name">Address Name</label>
+        <input type="text" class="form-control" asp-for="Address.name" required />
+        <span asp-validation-for="Address.name" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.city">City</label>
+        <input type="text" class="form-control" asp-for="Address.city" required />
+        <span asp-validation-for="Address.city" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.state">State</label>
+        <input type="text" class="form-control" asp-for="Address.state" required />
+        <span asp-validation-for="Address.state" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.zipcode"> Zip Code</label>
+        <input type="number" class="form-control" asp-for="Address.zipcode" required />
+        <span asp-validation-for="Address.zipcode" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.country">Country</label>
+        <input type="text" class="form-control" asp-for="Address.country" required />
+        <span asp-validation-for="Address.country" class="text-danger"></span>
+
+    </div>
+
+
+
+    <div style="color:bisque;margin-top:20px">
+        <button type="submit" class="btn btn-primary" style="border-radius:50px;margin:auto;color:black;">Register</button>
+
+    </div>
+
+
+</form>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    const passwordInput = document.getElementById('passwordInput');
+    const showPasswordButton = document.getElementById('showPasswordButton');
+
+    showPasswordButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    });
+</script>
+
+<script>
+    const confrimpasswordInput = document.getElementById('confirmpasswordInput');
+    const confirmshowPasswordButton = document.getElementById('confirmshowPasswordButton');
+
+    confirmshowPasswordButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (confirmpasswordInput.type === 'password') {
+            confirmpasswordInput.type = 'text';
+        } else {
+            confirmpasswordInput.type = 'password';
+        }
+    });
+</script>
