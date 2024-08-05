@@ -1,6 +1,10 @@
-using Infrastucture;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Configure serilog
+builder.SeriLogConfiguration();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -22,6 +26,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

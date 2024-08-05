@@ -1,4 +1,4 @@
-using CarCompany.UI.Models;
+using Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

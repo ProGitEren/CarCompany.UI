@@ -1,0 +1,71 @@
+﻿@model AddressViewModel
+<br>
+<br>
+<h2 class="title-section">Update Address</h2>
+<hr />
+
+
+
+
+<form asp-action="UpdateAddress" method="post">
+    @*  @if (TempData["errorMessage"] != null)
+    {
+    <div asp-validation-summary="All" class="text-danger"></div>
+    } *@
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+   
+    <input type="hidden" asp-for="AddressId" /> 
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="name">Name</label>
+        <input type="text" class="form-control" asp-for="name" required />
+        <span asp-validation-for="name" class="text-danger"></span>
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="city">City</label>
+        <input type="text" class="form-control" asp-for="city" required />
+        <span asp-validation-for="city" class="text-danger"></span>
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+    
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="state">State</label>
+        <input type="text" class="form-control" asp-for="state" required />
+        <span asp-validation-for="state" class="text-danger"></span>
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="zipcode">Zipcode</label>
+        <input type="number" placeholder="30000" class="form-control" asp-for="zipcode" required />
+        <span asp-validation-for="zipcode" class="text-danger"></span>
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+   
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="country">Country</label>
+        <input type="text" placeholder="30000" class="form-control" asp-for="country" required />
+        <span asp-validation-for="country" class="text-danger"></span>
+    </div>
+
+
+    <div style="color:bisque;margin-top:20px">
+        <button type="submit" class="btn btn-primary" style="border-radius:50px;margin:auto;color::rgb(32, 28, 54);">Update</button>
+
+    </div>
+
+
+</form>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+}

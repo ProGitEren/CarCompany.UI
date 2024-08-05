@@ -6,8 +6,11 @@
 
 <br>
 <br>
-<h2 class="title-section">Users</h2>
 
+<div style="display: flex; justify-content: space-between; align-items:center;margin:10px;">
+    <h2 class="title-section">Users</h2>
+    <a asp-controller="Account" asp-action="RegisterAdmin" class="btn btn-primary"> <i class="bi bi-person-plus"></i> &nbsp; New User</a>
+</div>
 <hr />
 
 <div style="max-height:700px;overflow:scroll;">
@@ -18,6 +21,7 @@
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;">First Name</th>
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Last Name</th>
                 <th class="text-dark text-center align-middle " style="border-right:inherit !important;">Address</th>
+                
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;"></th>
             </tr>
         </thead>
@@ -33,18 +37,34 @@
                     <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.Email</td>
                     <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.FirstName</td>
                     <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.LastName</td>
-
-                    <td class="d-flex justify-content-center" style="border-right:inherit !important;">
-                        <div class="w-75 btn-group d-flex justify-content-between align-items-center" role="group">
+                    <td class="d-flex justify-content-center " style="border-right:inherit !important;">
+                        <div class="btn-group d-flex justify-content-between align-items-center me-4" role="group">
                             
-                            <a class="btn btn-dark" asp-controller="Account" asp-action="AddressDetail" asp-route-email="@user.Email" style="border-radius: 15px;margin-left:10px;background-color:transparent;">
+                            <a class="btn btn-primary " asp-controller="Account" asp-action="AddressDetail" asp-route-email="@user.Email" style="background-color:transparent;">
                                 <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Address
+                            </a>
+                            
+                        </div>
+
+                        <div class="btn-group d-flex justify-content-between align-items-center me-4" role="group">
+
+                            <a class="btn btn-secondary " asp-controller="Account" asp-action="UpdateAddress" asp-route-id="@user.Address.AddressId" style="background-color:transparent;">
+                                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Edit
+                            </a>
+                            
+                        </div>
+
+                        <div class="btn-group d-flex justify-content-between align-items-center" role="group">
+                            <a class="btn btn-primary" asp-controller="Account" asp-action="DeleteUser" asp-route-email="@user.Email" style="background-color:darkred;">
+                                <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
                             </a>
                         </div>
 
                     </td>
-
+                    
                 </tr>
+
+            
 
             }
         </tbody>
@@ -55,6 +75,4 @@
     <a class="btn btn-dark mt-4"  asp-controller="Home" asp-action="Index">Back to Home Page</a>
 
 </div>
-
-
 

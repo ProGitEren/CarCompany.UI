@@ -1,5 +1,4 @@
-﻿
-@model RegisterViewModel
+﻿@model RegisterViewModel
 <br>
 <br>
 <h2 class="title-section">Register</h2>
@@ -8,14 +7,14 @@
 
 
 
-<form asp-action="Register" method="post">
+<form asp-action="RegisterAdmin" method="post">
     @*  @if (TempData["errorMessage"] != null)
     {
     <div asp-validation-summary="All" class="text-danger"></div>
     } *@
 
     <div asp-validation-summary="All" class="text-danger"></div>
-    
+
     <h3 class="header-section">User Information</h3>
 
     <div class="form-group">
@@ -47,17 +46,18 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="birthtime">Birth Time</label>
-        <input type="text" class="form-control" asp-for="birthtime" placeholder = "HH/MM/YYYY" onfocus="this.type='date'" onblur="this.type='text'" required />
+        <input type="text" class="form-control" asp-for="birthtime" placeholder="HH/MM/YYYY" onfocus="this.type='date'" onblur="this.type='text'" required />
         <span asp-validation-for="birthtime" class="text-danger"></span>
 
     </div>
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="Role" class="form-label">Role</label>
-        <select asp-for="Role" class="form-select"  required>
+        <select asp-for="Role" class="form-select" required>
             <option value="Buyer" class="form-control">Buyer</option>
-            <option value="Seller" class="form-control">Seller</option>    
-            
+            <option value="Seller" class="form-control">Seller</option>
+            <option value="Admin" class="form-control">Admin</option>
+
         </select>
     </div>
 
@@ -143,7 +143,7 @@
 
 
     <div style="color:bisque;margin-top:20px">
-        <button type="submit" class="btn btn-primary" style="border-radius:50px;margin:auto;color:black;">Register</button>
+        <button type="submit" class="btn btn-primary" style="border-radius:50px;margin:auto;color:black;">Create</button>
 
     </div>
 
@@ -195,7 +195,7 @@
 
     .form-group select:hover {
         background-color: dimgrey !important; /* Change this to your desired hover color */
- !important;
+        !important;
     }
 
     .form-group select option:hover {
