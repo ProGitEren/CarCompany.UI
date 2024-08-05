@@ -1,0 +1,138 @@
+﻿
+@model UserViewModel
+<br>
+<br>
+<h2 class="title-section">Delete User</h2>
+<hr />
+
+
+
+
+<form asp-action="DeleteUserPost" method="post">
+     @if (TempData["errorMessage"] != null)
+    {
+    <div asp-validation-summary="All" class="text-danger"></div>
+    }
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    
+    <h3 class="header-section">User Information</h3>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Email">Email</label>
+        <input type="email" class="form-control" asp-for="Email" required readonly />
+        <span asp-validation-for="Email" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="FirstName">First Name</label>
+        <input type="text" class="form-control" asp-for="FirstName" required readonly/>
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="LastName">Last Name</label>
+        <input type="text" class="form-control" asp-for="LastName" required readonly/>
+        <span asp-validation-for="LastName" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <!-- Roles Header -->
+    <h3 class="header-section">Roles</h3>
+
+    <!-- Roles Details -->
+    <div class="form-group">
+        
+       @foreach (var role in Model.roles)
+       {
+            <input type="text" value="@role" class="form-control mb-3" required readonly />
+       }
+        
+    </div>
+
+   
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <h3 class="header-section">Address Information</h3>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.name">Address Name</label>
+        <input type="text" class="form-control" asp-for="Address.name" required readonly/>
+        <span asp-validation-for="Address.name" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.city">City</label>
+        <input type="text" class="form-control" asp-for="Address.city" required readonly />
+        <span asp-validation-for="Address.city" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.state">State</label>
+        <input type="text" class="form-control" asp-for="Address.state" required readonly />
+        <span asp-validation-for="Address.state" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.zipcode"> Zip Code</label>
+        <input type="number" class="form-control" asp-for="Address.zipcode" required readonly />
+        <span asp-validation-for="Address.zipcode" class="text-danger"></span>
+
+    </div>
+
+    <div style="width:fit-content;height:10px;"></div>
+
+    <div class="form-group">
+        <label style="color:black;margin-bottom:5px;" asp-for="Address.country">Country</label>
+        <input type="text" class="form-control" asp-for="Address.country" required readonly />
+        <span asp-validation-for="Address.country" class="text-danger"></span>
+
+    </div>
+
+
+
+    <div class="d-flex justify-content-center mt-3 " style="border-right:inherit !important;">
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
+
+            <a class="btn btn-primary " asp-controller="Account" asp-action="UsersList" style="margin-left:10px;background-color:transparent;">
+                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Back To List
+            </a>
+
+        </div>
+
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center gap-2" role="group">
+
+            <a class="btn btn-dark " asp-controller="Account" asp-action="DeleteUser" asp-route-email="@Model.Email" style="margin-left:10px;background-color:black;" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Remove
+            </a>
+        </div>
+    </div>
+
+    <partial name="_DeleteConfirmationUser" />
+</form>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

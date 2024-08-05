@@ -26,6 +26,27 @@
             </div>
         </div>
 
+        <!-- Roles Header -->
+        <div class="col-12">
+            <h2 class="profile-header text-center mb-4">Roles</h2>
+        </div>
+
+
+        @* At this point the edit functionality is not available *@
+        <!-- Roles Details -->
+        <div class="col-md-12">
+            <div class="profile-card">
+                <h4 class="margin-bottom-20">User Roles</h4>
+                <ul>
+                    @foreach (var role in Model.roles)
+                    {
+                        <li>@role</li>
+                    }
+                </ul>
+            </div>
+        </div> 
+
+
         <!-- Address Header -->
         <div class="col-12">
             <h2 class="profile-header text-center mb-4">Address Profile</h2>
