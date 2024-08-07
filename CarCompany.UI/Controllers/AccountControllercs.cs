@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Infrastructure.DTO;
-using Infrastructure.ExceptionHelper;
 using Infrastructure.Exceptions;
+using Infrastructure.Helpers;
 using Infrastructure.Models;
 using Infrastructure.Models.ViewModels;
 using Infrastructure.Services;

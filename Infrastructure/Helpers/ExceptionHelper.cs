@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.ExceptionHelper
+namespace Infrastructure.Helpers
 {
     public class ExceptionHelper
     {
@@ -21,7 +21,7 @@ namespace Infrastructure.ExceptionHelper
                         modelState.AddModelError("", $"{actionName} failed --> Not Found: {uiEx.Message}");
                         logger.Warning("{Action} failed for user {Email}: {Message}", actionName, userEmail ?? "Unknown", uiEx.Message);
                         break;
-                    
+
                     case HttpStatusCode.Unauthorized:
                         modelState.AddModelError("", $"{actionName} failed --> Unauthorized: {uiEx.Message}");
                         logger.Warning("{Action} failed for user {Email}: {Message}", actionName, userEmail ?? "Unknown", uiEx.Message);
@@ -36,15 +36,15 @@ namespace Infrastructure.ExceptionHelper
                         break;
                 }
             }
-            else if (ex is UIBadRequestException uiBadRequest) 
+            else if (ex is UIBadRequestException uiBadRequest)
             {
-                
-                foreach (var error in uiBadRequest.Messages) 
+
+                foreach (var error in uiBadRequest.Messages)
                 {
                     modelState.AddModelError("", $"{actionName} failed --> BadRequest: {error}");
                     logger.Warning("{Action} failed for user {Email}: {Message}", actionName, userEmail ?? "Unknown", error);
                 }
-            
+
             }
 
             else

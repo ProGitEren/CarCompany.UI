@@ -139,11 +139,11 @@ namespace Infrastructure.Services
 
             this.AddAuthorizationHeader();
 
-            var response = await _httpClient.GetAsync("api/User/get-current-user-with-Address");
+            var response = await _httpClient.GetAsync("api/User/get-current-user-with-Detail");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var user = JsonConvert.DeserializeObject<UserwithaddressDto>(json);
+                var user = JsonConvert.DeserializeObject<UserwithdetailDto>(json);
 
                 var model = _mapper.Map<UserViewModel>(user);
 
@@ -163,7 +163,7 @@ namespace Infrastructure.Services
 
             this.AddAuthorizationHeader();
 
-            var response = await _httpClient.GetAsync("api/User/get-all-users-with-Address");
+            var response = await _httpClient.GetAsync("api/User/get-all-users-with-Detail");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -189,7 +189,7 @@ namespace Infrastructure.Services
 
             this.AddAuthorizationHeader();
 
-            var response = await _httpClient.GetAsync($"api/User/get-user-by-email-with-Address/{email}");
+            var response = await _httpClient.GetAsync($"api/User/get-user-by-email-with-Detail/{email}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
