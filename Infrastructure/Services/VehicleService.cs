@@ -161,7 +161,7 @@ namespace Infrastructure.Services
             throw new UIException(response.StatusCode, "Failed.");
         }
 
-        public async Task<VehicleViewModel> DeleteVehicleAsync(string? Id)
+        public async Task<string> DeleteVehicleAsync(string? Id)
         {
             AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
             var response = await _httpClient.DeleteAsync($"api/Vehicle/delete-vehicle/{Id}");
@@ -169,10 +169,8 @@ namespace Infrastructure.Services
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var vehicle = JsonConvert.DeserializeObject<VehicleDto>(json);
-                var model = _mapper.Map<VehicleViewModel>(vehicle);
-
-                return model;
+                //string is returned
+                return json;
             }
             await ErrorResultHelper.ErrorResult(response);
 

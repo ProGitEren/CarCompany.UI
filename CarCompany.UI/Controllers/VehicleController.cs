@@ -199,13 +199,13 @@ namespace CarCompany.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeletePost(string? Id)
+        public async Task<IActionResult> DeletePost(string? Vin)
         {
 
             try
             {
-                var model = await _vehicleService.DeleteVehicleAsync(Id);
-                if (model == null)
+                var stringresult = await _vehicleService.DeleteVehicleAsync(Vin);
+                if (stringresult == null)
                 {
                     ModelState.AddModelError("", "The Vehicle could not be found.");
                     _logger.Warning("Vehicle delete failed.");

@@ -52,6 +52,92 @@ namespace Infrastructure.Services
 
         }
 
+        public async Task<VehicleModelViewModel> CreateAsync(RegisterVehicleModelViewModel viewmodel)
+        {
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+            var content = new StringContent(JsonConvert.SerializeObject(_mapper.Map<RegisterVehicleModelDto>(viewmodel)), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("api/VehicleModel/create-model", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var vehiclemodel = JsonConvert.DeserializeObject<VehicleModelDto>(json);
+                var model = _mapper.Map<VehicleModelViewModel>(vehiclemodel);
+
+                return model;
+            }
+            await ErrorResultHelper.ErrorResult(response);
+
+            // This line will never be reached, but is required by the compiler
+            // because the method signature requires a UserDto return type
+
+            throw new UIException(response.StatusCode, "Failed.");
+
+        }
+
+
+        public async Task<VehicleModelViewModel> GetModelAsync(int? Id)
+        {
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+            var response = await _httpClient.GetAsync($"api/VehicleModel/get-model/{Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var vehiclemodel = JsonConvert.DeserializeObject<VehicleModelDto>(json);
+                var model = _mapper.Map<VehicleModelViewModel>(vehiclemodel);
+
+                return model;
+            }
+            await ErrorResultHelper.ErrorResult(response);
+
+            // This line will never be reached, but is required by the compiler
+            // because the method signature requires a UserDto return type
+
+            throw new UIException(response.StatusCode, "Failed.");
+        }
+
+        public async Task<VehicleModelViewModel> UpdateVehicleModelAsync(VehicleModelViewModel model)
+        {
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+
+            var content = new StringContent(JsonConvert.SerializeObject(_mapper.Map<VehicleModelDto>(model)), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync("api/VehicleModel/update-model", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var vehiclemodel = JsonConvert.DeserializeObject<VehicleModelDto>(json);
+                model = _mapper.Map<VehicleModelViewModel>(vehiclemodel);
+
+                return model;
+            }
+            await ErrorResultHelper.ErrorResult(response);
+
+            // This line will never be reached, but is required by the compiler
+            // because the method signature requires a UserDto return type
+
+            throw new UIException(response.StatusCode, "Failed.");
+        }
+
+        public async Task<string> DeleteVehicleModelAsync(int? Id)
+        {
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+            var response = await _httpClient.DeleteAsync($"api/VehicleModel/delete-model/{Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                //string is returned
+                return json;
+            }
+            await ErrorResultHelper.ErrorResult(response);
+
+            // This line will never be reached, but is required by the compiler
+            // because the method signature requires a UserDto return type
+
+            throw new UIException(response.StatusCode, "Failed.");
+        }
 
     }
 }

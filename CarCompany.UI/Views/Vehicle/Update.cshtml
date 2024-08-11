@@ -27,7 +27,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="Averagefuelin">Average Fuel In</label>
-        <input type="number" step="0.01" class="form-control" asp-for="Averagefuelin" required />
+        <input type="number" step="0.0001" class="form-control" asp-for="Averagefuelin" required />
         <span asp-validation-for="Averagefuelin" class="text-danger"></span>
     </div>
 
@@ -35,7 +35,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="Averagefuelout">Average Fuel Out</label>
-        <input type="number" step="0.01" class="form-control" asp-for="Averagefuelout" required />
+        <input type="number" step="0.0001" class="form-control" asp-for="Averagefuelout" required />
         <span asp-validation-for="Averagefuelout" class="text-danger"></span>
     </div>
 

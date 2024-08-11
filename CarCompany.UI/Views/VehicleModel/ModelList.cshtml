@@ -9,7 +9,7 @@
         <h2 class="title-section text-light">Vehicle Models</h2>
         @if (User.IsInRole("Admin"))
         {
-            <a asp-controller="Vehicle" asp-action="Create" class="btn btn-primary">
+            <a asp-controller="VehicleModel" asp-action="Create" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> &nbsp; New Model
             </a> 
         }
@@ -20,7 +20,7 @@
         @foreach (var Model in Model)
         {
             <div class="col-md-4 mb-5">
-                <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                <div class="card text-white bg-dark mb-3 border-5" style="max-width: 20rem;border-radius:40px;">
                     <div class="card-header"> <h3 class="header-section text-center">@Model.ModelShortName</h3></div>
                     <div class="card-body">
                         <p class="card-text"><strong>Model Name:</strong> @Model.ModelLongName </p>

@@ -9,14 +9,14 @@
 <form asp-action="DeletePost" method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <input type="hidden" asp-for="ModelId" />
+    @* <input type="hidden" asp-for="ModelId" /> *@
     <input type="hidden" asp-for="Vin" />
 
     <h3 class="header-section">Vehicle Information</h3>
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="UserName">Owner Name</label>
-        <input type="text" class="form-control" asp-for="UserName" required readonly />
+        <input type="text" class="form-control" asp-for="UserName" required disabled />
         <span asp-validation-for="UserName" class="text-danger"></span>
     </div>
 
@@ -24,7 +24,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="Averagefuelin">Average Fuel In</label>
-        <input type="number" step="0.01" class="form-control" asp-for="Averagefuelin" required readonly />
+        <input type="number" step="0.0001" class="form-control" asp-for="Averagefuelin" required disabled />
         <span asp-validation-for="Averagefuelin" class="text-danger"></span>
     </div>
 
@@ -32,7 +32,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="Averagefuelout">Average Fuel Out</label>
-        <input type="number" step="0.01" class="form-control" asp-for="Averagefuelout" required readonly />
+        <input type="number" step="0.0001" class="form-control" asp-for="Averagefuelout" required disabled />
         <span asp-validation-for="Averagefuelout" class="text-danger"></span>
     </div>
 
@@ -40,7 +40,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="COemmission">CO Emission</label>
-        <input type="number" class="form-control" asp-for="COemmission" required readonly />
+        <input type="number" class="form-control" asp-for="COemmission" required disabled />
         <span asp-validation-for="COemmission" class="text-danger"></span>
     </div>
 
@@ -48,7 +48,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="FuelCapacity">Fuel Capacity</label>
-        <input type="number" class="form-control" asp-for="FuelCapacity" required readonly />
+        <input type="number" class="form-control" asp-for="FuelCapacity" required disabled />
         <span asp-validation-for="FuelCapacity" class="text-danger"></span>
     </div>
 
@@ -56,7 +56,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="MaxAllowedWeight">Max Allowed Weight</label>
-        <input type="number" class="form-control" asp-for="MaxAllowedWeight" required readonly />
+        <input type="number" class="form-control" asp-for="MaxAllowedWeight" required disabled />
         <span asp-validation-for="MaxAllowedWeight" class="text-danger"></span>
     </div>
 
@@ -64,7 +64,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="MinWeight">Min Weight</label>
-        <input type="number" class="form-control" asp-for="MinWeight" required readonly />
+        <input type="number" class="form-control" asp-for="MinWeight" required disabled />
         <span asp-validation-for="MinWeight" class="text-danger"></span>
     </div>
 
@@ -72,7 +72,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="BaggageVolume">Baggage Volume</label>
-        <input type="number" class="form-control" asp-for="BaggageVolume" required readonly />
+        <input type="number" class="form-control" asp-for="BaggageVolume" required disabled />
         <span asp-validation-for="BaggageVolume" class="text-danger"></span>
     </div>
 
@@ -81,7 +81,7 @@
 
     <div class="form-group">
         <label style="color:black;margin-bottom:5px;" asp-for="DrivenKM">Driven KM</label>
-        <input type="number" class="form-control" asp-for="DrivenKM" required readonly />
+        <input type="number" class="form-control" asp-for="DrivenKM" required disabled />
         <span asp-validation-for="DrivenKM" class="text-danger"></span>
     </div>
 
@@ -104,18 +104,16 @@
 
         }
         <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
-            <a class="btn btn-outline-dark " asp-controller="Vehicle" asp-action="Delete" asp-route-id= "@Model.Vin" style="margin-left:10px;" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+            <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
                 <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Remove
-            </a>
+            </button>
         </div>
 
     </div>
     <partial name="_DeleteConfirmation" />
     
 </form>
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+
 
 <style>
     /* Apply styles to labels on hover */
