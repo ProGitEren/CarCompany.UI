@@ -37,6 +37,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
                             </li>
+                            
                         }
 
                         @if (User.Identity.IsAuthenticated)
@@ -47,6 +48,18 @@
                             <li class="nav-item">
                                 <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="UsersList">Users</a>
                             </li>
+                            @if (User.IsInRole("Seller") || User.IsInRole("Buyer"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Vehicle" asp-action="UserVehicles">Vehicles</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Vehicle" asp-action="Vehicles">Vehicles</a>
+                                </li>
+                            }
                         }
 
                        

@@ -1,0 +1,46 @@
+﻿@model List<VehicleViewModel>
+
+@{
+    ViewData["Title"] = "Vehicles";
+    var vehicles = Model.OrderBy(y => y.ModelId).ThenBy(o => o.Vin).ToList();
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="title-section text-light">Vehicles</h2>
+        <a asp-controller="VehicleModel" asp-action="ModelList" class="btn btn-primary text-dark" style="background-color: cornflowerblue;">
+            <i class="bi bi-person-plus"></i> &nbsp; New Vehicle
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var vehicle in vehicles)
+        {
+            <div class="col-md-4 mb-5">
+                <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                    <div class="card-header">
+                        VIN: @vehicle.Vin
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Average Fuel In:</strong> @vehicle.Averagefuelin</p>
+                        <p><strong>Average Fuel Out:</strong> @vehicle.Averagefuelout</p>
+                        <p><strong>CO Emission:</strong> @vehicle.COemmission</p>
+                        <p><strong>Fuel Capacity:</strong> @vehicle.FuelCapacity</p>
+                        <p><strong>Max Allowed Weight:</strong> @vehicle.MaxAllowedWeight</p>
+                        <p><strong>Min Weight:</strong> @vehicle.MinWeight</p>
+                        <p><strong>Baggage Volume:</strong> @vehicle.BaggageVolume</p>
+                        <p><strong>Driven KM:</strong> @vehicle.DrivenKM</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin" class="btn btn-outline-info mx-1" style="background-color:#1e1d1d  ;">Edit</a>
+                        <a asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin" class="btn btn-outline-danger mx-1">Remove</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-5">
+        <a class="btn btn-dark" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+    </div>
+</div>

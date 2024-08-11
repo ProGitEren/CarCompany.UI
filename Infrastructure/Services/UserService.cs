@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
-using System.Security.Claims; 
-using Infrastructure.DTO;
-using Infrastructure.Models.ViewModels;
+using System.Security.Claims;
 using System.Net.Http.Headers;
 using Infrastructure.Exceptions;
 using Infrastructure.Errors;
@@ -14,6 +12,11 @@ using Microsoft.AspNetCore.Http;
 using Infrastructure.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Build.Framework;
+using Infrastructure.DTO.Dto_Users;
+using Infrastructure.DTO.Dto_Addresses;
+using Infrastructure.Models.ViewModels.Users;
+using Infrastructure.Models.ViewModels.Addresses;
+using Infrastructure.Helpers;
 
 namespace Infrastructure.Services
 {
@@ -56,7 +59,7 @@ namespace Infrastructure.Services
 
                 return user;
             }
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -67,7 +70,8 @@ namespace Infrastructure.Services
 
         public async Task<UserDto> RegisterAdminAsync(RegisterDto model)
         {
-            this.AddAuthorizationHeader(); // Since authorized user does this action we need this
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient);
+            // Since authorized user does this action we need this
             var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync("api/User/register-admin", content);
 
@@ -92,7 +96,7 @@ namespace Infrastructure.Services
                 return user;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -126,7 +130,7 @@ namespace Infrastructure.Services
                 return user;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -137,7 +141,8 @@ namespace Infrastructure.Services
         public async Task<UserViewModel> ProfileAsync()
         {
 
-            this.AddAuthorizationHeader();
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient);
+
 
             var response = await _httpClient.GetAsync("api/User/get-current-user-with-Detail");
             if (response.IsSuccessStatusCode)
@@ -150,7 +155,7 @@ namespace Infrastructure.Services
                 return model;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -161,7 +166,8 @@ namespace Infrastructure.Services
         public async Task<IReadOnlyList<UserViewModel>> UsersListAsync()
         {
 
-            this.AddAuthorizationHeader();
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient);
+
 
             var response = await _httpClient.GetAsync("api/User/get-all-users-with-Detail");
             if (response.IsSuccessStatusCode)
@@ -174,7 +180,7 @@ namespace Infrastructure.Services
                 return model;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -187,7 +193,8 @@ namespace Infrastructure.Services
         public async Task<UserViewModel> ProfileByEmailAsync(string email)
         {
 
-            this.AddAuthorizationHeader();
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient);
+
 
             var response = await _httpClient.GetAsync($"api/User/get-user-by-email-with-Detail/{email}");
             if (response.IsSuccessStatusCode)
@@ -200,7 +207,7 @@ namespace Infrastructure.Services
                 return model;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -211,7 +218,8 @@ namespace Infrastructure.Services
         public async Task<AddressViewModel> UpdateAddressAsync(AddressViewModel model)
         {
 
-            this.AddAuthorizationHeader();
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient);
+
 
             var content = new StringContent(JsonConvert.SerializeObject(_mapper.Map<AddressDto>(model)), Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync("api/User/update-user-Address", content);
@@ -225,7 +233,7 @@ namespace Infrastructure.Services
                 return model;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -236,7 +244,8 @@ namespace Infrastructure.Services
         public async Task<UserDto> UpdateUserAsync(UpdateUserViewModel model)
         {
 
-            this.AddAuthorizationHeader();
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient);
+
 
             var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync("api/User/update-user", content);
@@ -264,7 +273,7 @@ namespace Infrastructure.Services
                 return userdto;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -275,19 +284,20 @@ namespace Infrastructure.Services
         public async Task<string> DeleteUserAsync(string? email)
         {
 
-            this.AddAuthorizationHeader();
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient);
+
 
             var response = await _httpClient.DeleteAsync($"api/User/delete-user/{email}");
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<string>(json);
-
-                return result;
+                //var result = JsonConvert.DeserializeObject<string>(json);
+                //no need for deserialzie as it is already a string gives an error
+                return json;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -300,7 +310,7 @@ namespace Infrastructure.Services
         public async Task<AddressViewModel> GetAddressAsync(Guid? Id)
         {
 
-            this.AddAuthorizationHeader();
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor,_httpClient);
 
             var response = await _httpClient.GetAsync($"api/User/get-Address-by-id/{Id}");
             if (response.IsSuccessStatusCode)
@@ -313,7 +323,7 @@ namespace Infrastructure.Services
                 return model;
             }
 
-            await ErrorResult(response);
+            await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type
@@ -321,32 +331,8 @@ namespace Infrastructure.Services
             throw new UIException(response.StatusCode, "Registration failed.");
         }
 
-        // Method to add token to requests
-        private void AddAuthorizationHeader()
-        {
-            var token = _httpContextAccessor.HttpContext.Request.Cookies["JwtToken"];
-            if (!string.IsNullOrEmpty(token))
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
-        }
 
-        private async Task ErrorResult(HttpResponseMessage? response)
-        {
-
-
-            if (!(response.StatusCode == HttpStatusCode.BadRequest))
-            {
-                var errormessage = await response.Content.ReadAsStringAsync();
-                var ErrorObject = JsonConvert.DeserializeObject<BaseCommonResponse>(errormessage);
-                throw new UIException(response.StatusCode, ErrorObject.Message);
-                
-            }
-            var errormessage_ = await response.Content.ReadAsStringAsync();
-            var ErrorObject_ = JsonConvert.DeserializeObject<ApiValidationErrorResponse>(errormessage_);
-           
-            throw new UIBadRequestException(response.StatusCode, ErrorObject_.Errors);
-        }
+       
     }
 }
 

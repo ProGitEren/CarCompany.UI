@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using Infrastructure.DTO;
+using Infrastructure.DTO.Dto_Users;
 using Infrastructure.Exceptions;
 using Infrastructure.Helpers;
 using Infrastructure.Models;
-using Infrastructure.Models.ViewModels;
+using Infrastructure.Models.ViewModels.Addresses;
+using Infrastructure.Models.ViewModels.Users;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

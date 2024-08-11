@@ -1,5 +1,6 @@
 ﻿@model List<UserViewModel>
 
+
 @{
     ViewData["Title"] = "Users";
 }
@@ -16,76 +17,58 @@
 <hr />
 
 <div style="max-height:700px;overflow:scroll;">
-    <table class="table table-bordered table-striped table-transparent">
-        <thead class="thead-dark">
-            <tr>
+    <table class="table table-hover table-bordered table-striped table-transparent">
+        <thead class="thead-info">
+            <tr class="table-info">
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Email</th>
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;">First Name</th>
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Last Name</th>
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Roles</th>
-                <th class="text-dark text-center align-middle " style="border-right:inherit !important;">Address</th>
-                
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Address</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Vehicles</th>
                 <th class="text-dark text-center align-middle" style="border-right:inherit !important;"></th>
             </tr>
         </thead>
-
-
-
         <tbody>
-            
             @foreach (var user in Model)
             {
-
-                <tr>
+                <tr class="table-info">
                     <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.Email</td>
                     <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.FirstName</td>
                     <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.LastName</td>
                     <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">
-                    @foreach (var role in user.roles)
-                    {
-                        @role
-                        <br />
-                    }
+                        @foreach (var role in user.roles)
+                        {
+                            @role
+                            <br />
+                        }
                     </td>
-                    <td class="d-flex justify-content-center " style="border-right:inherit !important;">
-                        <div class="btn-group d-flex justify-content-between align-items-center me-4" role="group">
-                            
-                            <a class="btn btn-primary " asp-controller="Account" asp-action="AddressDetail" asp-route-email="@user.Email" style="background-color:transparent;">
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">
+                        <div class="btn-group d-flex justify-content-center align-items-center" role="group">
+                            <a class="btn btn-secondary btn-outline-info" asp-controller="Account" asp-action="AddressDetail" asp-route-email="@user.Email" >
                                 <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Address
                             </a>
-                            
-                        </div>
-
-                        <div class="btn-group d-flex justify-content-between align-items-center me-4" role="group">
-
-                            <a class="btn btn-secondary " asp-controller="Account" asp-action="UpdateAddress" asp-route-id="@user.Address.AddressId" style="background-color:transparent;">
+                            <a class="btn btn-outline-dark ms-2" asp-controller="Account" asp-action="UpdateAddress" asp-route-id="@user.Address.AddressId" >
                                 <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Edit
                             </a>
-                            
-                        </div>
-
-                        <div class="btn-group d-flex justify-content-between align-items-center" role="group">
-                            <a class="btn btn-primary" asp-controller="Account" asp-action="DeleteUser" asp-route-email="@user.Email" style="background-color:darkred;" >
+                            <a class="btn btn-outline-danger ms-2" asp-controller="Account" asp-action="DeleteUser" asp-route-email="@user.Email">
                                 <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
                             </a>
                         </div>
-
-                        
-
-
                     </td>
-                    
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">
+                        <div class="btn-group d-flex justify-content-center align-items-center" role="group">
+                            <a class="btn btn-primary" asp-controller="Vehicle" asp-action="VehicleDetail" asp-route-email="@user.Email" style="background-color:transparent;">
+                                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Vehicles
+                            </a>
+                        </div>
+                    </td>
                 </tr>
-
-            
-
             }
         </tbody>
     </table>
 </div>
 
 <div class="container">
-    <a class="btn btn-dark mt-4"  asp-controller="Home" asp-action="Index">Back to Home Page</a>
-
+    <a class="btn btn-secondary mt-4" asp-controller="Home" asp-action="Index">Back to Home Page</a>
 </div>
-

@@ -1,0 +1,120 @@
+﻿@model List<VehicleViewModel>
+
+@{
+    ViewData["Title"] = "Vehicles";
+    var companyVehicles = Model.Where(x => x.UserId == null).OrderBy(y => y.ModelId).ThenBy(o=>o.Vin).ToList();
+    var userVehicles = Model.Except(companyVehicles).OrderBy(y => y.ModelId).ThenBy(o => o.Vin).ToList();
+}
+
+<br>
+<br>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="title-section text-light">Vehicles</h2>
+        <a asp-controller="VehicleModel" asp-action="ModelList" class="btn btn-primary text-dark" style="background-color: cornflowerblue;">
+            <i class="bi bi-person-plus"></i> &nbsp; New Vehicle
+        </a>
+    </div>
+
+<hr />
+
+<h2 class="title-section text-center">Company Vehicles</h2>
+<hr />
+
+<div style="max-height:700px; overflow-y: scroll;">
+    <table class="table table-hover table-bordered table-striped table-transparent">
+        <thead class="thead-info">
+            <tr class="table-info">
+                <th class="text-center align-middle">VIN</th>
+                <th class="text-center align-middle">Average Fuel In</th>
+                <th class="text-center align-middle">Average Fuel Out</th>
+                <th class="text-center align-middle">CO Emission</th>
+                <th class="text-center align-middle">Fuel Capacity</th>
+                <th class="text-center align-middle">Max Allowed Weight</th>
+                <th class="text-center align-middle">Min Weight</th>
+                <th class="text-center align-middle">Baggage Volume</th>
+                <th class="text-center align-middle">Driven KM</th>
+                <th class="text-center align-middle">Model ID</th>
+                <th class="text-center align-middle">Engine ID</th>
+                <th class="text-center align-middle"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in companyVehicles)
+            {
+                <tr class="table-info">
+                    <td class="text-body text-center align-middle">@vehicle.Vin</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelin</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelout</td>
+                    <td class="text-body text-center align-middle">@vehicle.COemmission</td>
+                    <td class="text-body text-center align-middle">@vehicle.FuelCapacity</td>
+                    <td class="text-body text-center align-middle">@vehicle.MaxAllowedWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.MinWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.BaggageVolume</td>
+                    <td class="text-body text-center align-middle">@vehicle.DrivenKM</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelId</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineId</td>
+                    <td class="text-body text-center align-middle">
+                        <div class="-group d-flex justify-content-center align-items-center" role="group">
+                            <a class="btn btn-outline-info btn-sm me-2" asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin">
+                                <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
+                            </a>
+                            <a class="btn btn-outline-danger btn-sm" asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin">
+                                <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<h2 class="title-section text-center mt-5">User Vehicles</h2>
+<hr />
+
+<div style="max-height:700px; overflow-y: scroll;">
+    <table class="table table-hover table-bordered table-striped table-transparent">
+        <thead class="thead-info">
+            <tr class="table-info">
+                <th class="text-center align-middle">VIN</th>
+                <th class="text-center align-middle">User Name</th>
+                <th class="text-center align-middle">Average Fuel In</th>
+                <th class="text-center align-middle">Average Fuel Out</th>
+                <th class="text-center align-middle">CO Emission</th>
+                <th class="text-center align-middle">Fuel Capacity</th>
+                <th class="text-center align-middle">Max Allowed Weight</th>
+                <th class="text-center align-middle">Min Weight</th>
+                <th class="text-center align-middle">Baggage Volume</th>
+                <th class="text-center align-middle">Driven KM</th>
+                <th class="text-center align-middle">Model ID</th>
+                <th class="text-center align-middle">Engine ID</th>
+                <th class="text-center align-middle"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in userVehicles)
+            {
+                <tr class="table-info">
+                    <td class="text-body text-center align-middle">@vehicle.Vin</td>
+                    <td class="text-body text-center align-middle">@vehicle.UserName</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelin</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelout</td>
+                    <td class="text-body text-center align-middle">@vehicle.COemmission</td>
+                    <td class="text-body text-center align-middle">@vehicle.FuelCapacity</td>
+                    <td class="text-body text-center align-middle">@vehicle.MaxAllowedWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.MinWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.BaggageVolume</td>
+                    <td class="text-body text-center align-middle">@vehicle.DrivenKM</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelId</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="container">
+    <a class="btn btn-dark mt-4" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+</div>

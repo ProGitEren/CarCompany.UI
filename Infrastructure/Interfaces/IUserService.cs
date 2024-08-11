@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Infrastructure.DTO;
 using Infrastructure.Errors;
 using Infrastructure.Exceptions;
-using Infrastructure.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -12,6 +10,9 @@ using System.Net.Http.Headers;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Infrastructure.DTO.Dto_Users;
+using Infrastructure.Models.ViewModels.Users;
+using Infrastructure.Models.ViewModels.Addresses;
 
 namespace Infrastructure.Interfaces
 {

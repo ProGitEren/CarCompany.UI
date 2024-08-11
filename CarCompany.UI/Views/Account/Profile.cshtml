@@ -21,7 +21,7 @@
                     <li><strong>First Name:</strong> @Model.FirstName</li>
                     <li><strong>Last Name:</strong> @Model.LastName</li>
                 </ul>
-                <a class="btn btn-light " asp-controller="Account" asp-action="UpdateUser" >Edit</a>
+                <a class="btn btn-outline-dark " asp-controller="Account" asp-action="UpdateUser" >Edit</a>
                 
             </div>
         </div>
@@ -64,7 +64,7 @@
                     <li><strong>Country:</strong>  @Model.Address.country</li>
                     
                 </ul>
-                <a class="btn btn-light " asp-controller="Account" asp-action="UpdateAddress" asp-route-id="@Model.Address.AddressId">Edit</a>
+                <a class="btn btn-outline-dark " asp-controller="Account" asp-action="UpdateAddress" asp-route-id="@Model.Address.AddressId">Edit</a>
             </div>
         </div>
     </div>

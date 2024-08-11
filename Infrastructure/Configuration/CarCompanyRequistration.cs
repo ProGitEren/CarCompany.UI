@@ -32,6 +32,21 @@ namespace Infrastructure
                 client.BaseAddress = new Uri("https://localhost:7218");
             });
 
+            services.AddHttpClient<VehicleService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7218");
+            });
+            
+            services.AddHttpClient<VehicleModelService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7218");
+            }); 
+           
+            services.AddHttpClient<EngineService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7218");
+            }); 
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

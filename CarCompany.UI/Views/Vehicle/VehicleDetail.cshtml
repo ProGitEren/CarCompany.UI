@@ -1,0 +1,46 @@
+﻿@model IReadOnlyList<VehicleViewModel>
+
+@{
+    ViewData["Title"] = "Vehicles";
+}
+
+<div style="display: flex; align-items: center; justify-content: space-between; margin: 10px; position: relative;">
+    <h2 class="title-section" style="margin: 0 auto;">Vehicles</h2>
+</div>
+ 
+<div class="row">
+    @foreach (var vehicle in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    VIN: @vehicle.Vin
+                </div>
+                <div class="card-body">
+                    <p><strong>Average Fuel In:</strong> @vehicle.Averagefuelin</p>
+                    <p><strong>Average Fuel Out:</strong> @vehicle.Averagefuelout</p>
+                    <p><strong>CO Emission:</strong> @vehicle.COemmission</p>
+                    <p><strong>Fuel Capacity:</strong> @vehicle.FuelCapacity</p>
+                    <p><strong>Max Allowed Weight:</strong> @vehicle.MaxAllowedWeight</p>
+                    <p><strong>Min Weight:</strong> @vehicle.MinWeight</p>
+                    <p><strong>Baggage Volume:</strong> @vehicle.BaggageVolume</p>
+                    <p><strong>Driven KM:</strong> @vehicle.DrivenKM</p>
+                </div>
+                <div class="card-footer text-center">
+                  
+                    @if (vehicle.UserId is null)
+                    {
+                        <a asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin" class="btn btn-outline-info mx-1">Edit</a>
+                        <a asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin" class="btn btn-outline-danger mx-1">Remove</a>
+                    }
+                    
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="text-center mt-4">
+    <a class="btn btn-secondary" asp-controller="Account" asp-action="UsersList">Back to List</a>
+</div>
+</div>
