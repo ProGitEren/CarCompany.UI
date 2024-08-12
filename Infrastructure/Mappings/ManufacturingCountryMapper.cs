@@ -19,12 +19,12 @@ namespace Infrastructure.Mappings
                     { 7, "United Kingdom" },
                     { 8, "South Korea" },
                     { 9, "China" },
-                    { 10, "India" },
-                    { 11, "Australia" },
-                    { 12, "Mexico" },
-                    { 13, "Brazil" },
-                    { 14, "Russia" },
-                    { 15, "Spain" }
+                    //{ 10, "India" },
+                    //{ 11, "Australia" },
+                    //{ 12, "Mexico" },
+                    //{ 13, "Brazil" },
+                    //{ 14, "Russia" },
+                    //{ 15, "Spain" }
                 };
 
     }

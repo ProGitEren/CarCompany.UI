@@ -8,8 +8,13 @@ namespace Infrastructure.Mappings
 {
     public static class EngineMapper
     {
-        public static readonly Dictionary<string, string> EngineMapping = new Dictionary<string, string>
+        public static  Dictionary<string, string> EngineMapping = new Dictionary<string, string>
                 {
+                    { "EN123", "Standard 2.0L Inline 4 Engine" },
+                    { "EN456", "High Output 3.5L V6 Engine" },
+                    { "EN789", "Performance 4.0L V8 Engine" },
+                    { "EN101", "Economy 1.6L Inline 4 Engine" },
+
                     { "F1V8", "Ford V8 Engine" },
                     { "F2EM", "Ford Electric Motor" },
                     { "F3HY", "Ford Hybrid Engine" },

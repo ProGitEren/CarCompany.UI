@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Infrastructure.Mappings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,19 +17,16 @@ namespace Infrastructure.Models.ViewModels.VehicleModels
         public int ModelYear { get; set; }
         public int ManufacturedCountry { get; set; } // Selected value
         public string Manufacturer { get; set; } // Selected value
-        public string SecurityCode { get; set; } // Selected value
-        public string ManufacturedYear { get; set; } // Selected value
         public string ManufacturedPlant { get; set; } // Selected value
         public string CheckDigit { get; set; } // Selected value
-        public string ModelCode { get; set; }
 
         // Select Options
-        public Dictionary<int, string> ManufacturedCountryOptions { get; set; }
-        public Dictionary<string,string> ManufacturerOptions { get; set; }
-        public Dictionary<string,string> ManufacturedPlantOptions { get; set; }
-        public List<string> CheckDigitOptions { get; set; }
-        public Dictionary<VehicleType, string> VehicleTypeOptions { get; set; }
-        public Dictionary<string, string> EngineCodeOptions { get; set; }
+        public Dictionary<int, string> ManufacturedCountryOptions { get; set; } = ManufacturingCountryMapper.CountryMapping;
+        public Dictionary<string,string> ManufacturerOptions { get; set; } = ManufacturerMapper.ManufacturerMapping;
+        public Dictionary<string,string> ManufacturedPlantOptions { get; set; } =  ManufacturedPlantMapper.PlantMapping;
+        public List<string> CheckDigitOptions { get; set; } = SecurityCodeMapper.SecurityCodes;
+        public Dictionary<VehicleType, string> VehicleTypeOptions { get; set; } =  Enum.GetValues(typeof(VehicleType)).Cast<VehicleType>().ToDictionary(v => v, v => v.ToString());
+        public Dictionary<string, string> EngineCodeOptions { get; set; } = EngineMapper.EngineMapping;
 
     }
 }

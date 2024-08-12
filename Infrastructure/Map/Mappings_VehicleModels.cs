@@ -15,6 +15,7 @@ namespace Infrastructure.Map
         {
             CreateMap<VehicleModelViewModel,VehicleModelDto>().ReverseMap();
             CreateMap<RegisterVehicleModelViewModel, VehicleModelDto>().ReverseMap();
+            CreateMap<RegisterVehicleModelViewModel, RegisterVehicleModelDto>().ReverseMap();
             CreateMap<VehicleModelUserViewModel,VehicleModelDto>().ReverseMap();
         }
 

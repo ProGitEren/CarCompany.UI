@@ -46,7 +46,7 @@ namespace CarCompany.UI.Controllers
             }
             catch (Exception ex)
             {
-                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UserVehicles");
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetModels");
             }
 
             return View(model);
@@ -58,175 +58,131 @@ namespace CarCompany.UI.Controllers
         {
 
 
-            var model = new RegisterVehicleModelViewModel
-            {
-                CheckDigitOptions = SecurityCodeMapper.SecurityCodes,
-                VehicleTypeOptions = Enum.GetValues(typeof(VehicleType))
-                                         .Cast<VehicleType>()
-                                         .ToDictionary(v => v, v => v.ToString()),
-
-                EngineCodeOptions = EngineMapper.EngineMapping,
-                ManufacturedCountryOptions = ManufacturingCountryMapper.CountryMapping,
-                ManufacturedPlantOptions = ManufacturedPlantMapper.PlantMapping,
-                ManufacturerOptions = ManufacturerMapper.ManufacturerMapping,
-            
-            };
+            var model = new RegisterVehicleModelViewModel();
+           
 
             return View(model);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create(RegisterVehicleViewModel model)
-        //{
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
 
-        //    try
-        //    {
-        //        var vehicle = await _vehicleModelService.CreateAsync(model);
-        //    }
+        public async Task<IActionResult> Create(RegisterVehicleModelViewModel model)
+        {
 
-        //    catch (Exception ex)
-        //    {
-        //        TempData["error"] = "Problem occured on registering the new vehicle.";
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateVehicle");
+            try
+            {
+                var vehicle = await _vehicleModelService.CreateAsync(model);
+                _logger.Information("The Model successfully deleted.");
+                return RedirectToAction("ModelList", "VehicleModel");
+            }
 
-        //    }
+            catch (Exception ex)
+            {
+                TempData["error"] = "Problem occured on registering the new model.";
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateModel");
 
-        //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+            }
+
+            return View(model);
+        }
 
 
-        //}
 
-        //[HttpGet]
-        //public async Task<IActionResult> VehicleDetail(string? email)
-        //{
 
-        //    try
-        //    {
-        //        var vehicles = await _vehicleService.GetVehicleDetailAsync(email);
-        //        _logger.Information($"The vehicles for the user {email} has successfully retrieved");
-        //        return View(vehicles);
-        //    }
+        [HttpGet]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> Update(int? Id)
+        {
+            var model = new VehicleModelViewModel();
+            try
+            {
+                model = await _vehicleModelService.GetModelAsync(Id);
+                if (model == null)
+                {
+                    ModelState.AddModelError("", "The Model could not be found.");
+                    _logger.Warning("Model retrieval failed.");
+                }
+                _logger.Information("Model retrieval successful.");
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateModel");
+            }
 
-        //    catch (Exception ex)
-        //    {
-        //        TempData["error"] = "Problem occured on Retrieving the user vehicles.";
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "VehicleDetail");
+            return View(model);
+        }
 
-        //    }
+        [HttpPost]
+        public async Task<IActionResult> Update(VehicleModelViewModel model)
+        {
 
-        //    return RedirectToAction("UsersList", "Account");
-        //}
+            try
+            {
+                model = await _vehicleModelService.UpdateVehicleModelAsync(model);
+                if (model == null)
+                {
+                    ModelState.AddModelError("", "The Model could not be found.");
+                    _logger.Warning("Model update failed.");
+                }
+                _logger.Information("Model update successful.");
+                return RedirectToAction("ModelList", "VehicleModel");
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateModel");
+            }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Vehicles()
-        //{
-        //    var model = new List<VehicleViewModel>();
-        //    try
-        //    {
-        //        model = await _vehicleService.GetVehiclesAsync() as List<VehicleViewModel>;
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicles could not be found.");
-        //            _logger.Warning("Vehicles retrieval failed.");
-        //        }
-        //        _logger.Information("Vehicles retrieval successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
+            return View(model);
+        }
 
-        //    return View(model);
-        //}
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? Id)
+        {
+            var model = new VehicleModelViewModel();
+            try
+            {
+                model = await _vehicleModelService.GetModelAsync(Id);
+                if (model == null)
+                {
+                    ModelState.AddModelError("", "The Model could not be found.");
+                    _logger.Warning("Model retrieval failed.");
+                }
+                _logger.Information("Model retrieval successful.");
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteModel");
+            }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Update(string? Id)
-        //{
-        //    var model = new VehicleViewModel();
-        //    try
-        //    {
-        //        model = await _vehicleService.GetVehicleAsync(Id);
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle retrieval failed.");
-        //        }
-        //        _logger.Information("Vehicle retrieval successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
+            return View(model);
+        }
 
-        //    return View(model);
-        //}
+        [HttpPost]
+        public async Task<IActionResult> DeletePost(int? Id)
+        {
 
-        //[HttpPost]
-        //public async Task<IActionResult> Update(VehicleViewModel model)
-        //{
+            try
+            {
+                var stringresult = await _vehicleModelService.DeleteVehicleModelAsync(Id);
+                if (stringresult == null)
+                {
+                    ModelState.AddModelError("", "The Model could not be found.");
+                    _logger.Warning("Model delete failed.");
+                }
+                TempData["success"] = "The model successfully deleted.";
+                _logger.Information("Model delete successful.");
 
-        //    try
-        //    {
-        //        model = await _vehicleService.UpdateVehicleAsync(model);
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle update failed.");
-        //        }
-        //        _logger.Information("Vehicle update successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteModel");
+            }
+            
+            return RedirectToAction("ModelList", "VehicleModel");
+        }
 
-        //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> Delete(string? Id)
-        //{
-        //    var model = new VehicleViewModel();
-        //    try
-        //    {
-        //        model = await _vehicleService.GetVehicleAsync(Id);
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle retrieval failed.");
-        //        }
-        //        _logger.Information("Vehicle retrieval successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
-
-        //    return View(model);
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> DeletePost(string? Vin)
-        //{
-
-        //    try
-        //    {
-        //        var stringresult = await _vehicleService.DeleteVehicleAsync(Vin);
-        //        if (stringresult == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle delete failed.");
-        //        }
-        //        TempData["success"] = "The vehicle successfully deleted.";
-        //        _logger.Information("Vehicle delete successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
-
-        //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
-        //}
 
 
 

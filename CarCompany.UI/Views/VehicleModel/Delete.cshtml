@@ -1,39 +1,39 @@
-﻿@model RegisterVehicleModelViewModel
+﻿@model VehicleModelViewModel
 <br>
 <br>
-<h2 class="title-section">Register Vehicle Model</h2>
+<h2 class="title-section">Delete Vehicle Model</h2>
 <hr />
 
 
 
-<form asp-action="Create" method="post">
-    
-    <div asp-validation-summary="All" class="text-danger"></div>
+<form asp-action="DeletePost" method="post">
 
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input asp-for="Id" hidden/>
     <div class="form-group">
         <label asp-for="ModelShortName">Model Short Name</label>
-        <input type="text" class="form-control" asp-for="ModelShortName" />
+        <input type="text" class="form-control" asp-for="ModelShortName" disabled />
         <span asp-validation-for="ModelShortName" class="text-danger"></span>
 
     </div>
 
     <div class="form-group">
         <label asp-for="ModelLongName">Model Long Name</label>
-        <input type="text" class="form-control" asp-for="ModelLongName" />
+        <input type="text" class="form-control" asp-for="ModelLongName" disabled />
         <span asp-validation-for="ModelLongName" class="text-danger"></span>
 
     </div>
 
     <div class="form-group">
         <label asp-for="ModelYear">Model Year</label>
-        <input type="number" min="1980" max="2030" title="Enter a number between 1980 and 2030" class="form-control" asp-for="ModelYear" />
+        <input type="number" min="1980" max="2030" title="Enter a number between 1980 and 2030" class="form-control" asp-for="ModelYear" disabled />
         <span asp-validation-for="ModelYear" class="text-danger"></span>
 
     </div>
 
     <div class="form-group">
         <label asp-for="VehicleType">Vehicle Type</label>
-        <select asp-for="VehicleType" class="form-control" asp-items="@(new SelectList(Model.VehicleTypeOptions, "Key", "Value"))">
+        <select asp-for="VehicleType" class="form-control" asp-items="@(new SelectList(Model.VehicleTypeOptions, "Key", "Value"))" disabled>
             <option value="">Select Vehicle Type</option>
         </select>
         <span asp-validation-for="VehicleType" class="text-danger"></span>
@@ -42,18 +42,18 @@
 
     <div class="form-group">
         <label asp-for="EngineCode">Engine Code</label>
-        <select asp-for="EngineCode" class="form-control" asp-items="@(new SelectList(Model.EngineCodeOptions, "Key", "Value"))">
+        <select asp-for="EngineCode" class="form-control" asp-items="@(new SelectList(Model.EngineCodeOptions, "Key", "Value"))" disabled>
             <option value="">Select Engine Code</option>
         </select>
         <span asp-validation-for="EngineCode" class="text-danger"></span>
 
     </div>
 
-   
+
 
     <div class="form-group">
         <label asp-for="ManufacturedCountry">Manufactured Country</label>
-        <select asp-for="ManufacturedCountry" class="form-control" asp-items="@(new SelectList(Model.ManufacturedCountryOptions, "Key", "Value"))">
+        <select asp-for="ManufacturedCountry" class="form-control" asp-items="@(new SelectList(Model.ManufacturedCountryOptions, "Key", "Value"))" disabled>
             <option value="">Select Country</option>
         </select>
         <span asp-validation-for="ManufacturedCountry" class="text-danger"></span>
@@ -62,7 +62,7 @@
 
     <div class="form-group">
         <label asp-for="Manufacturer">Manufacturer</label>
-        <select asp-for="Manufacturer" class="form-control" asp-items="@(new SelectList(Model.ManufacturerOptions, "Key", "Value"))">
+        <select asp-for="Manufacturer" class="form-control" asp-items="@(new SelectList(Model.ManufacturerOptions, "Key", "Value"))" disabled>
             <option value="">Select Manufacturer</option>
         </select>
         <span asp-validation-for="Manufacturer" class="text-danger"></span>
@@ -72,7 +72,7 @@
 
     <div class="form-group">
         <label asp-for="ManufacturedPlant">Manufactured Plant</label>
-        <select asp-for="ManufacturedPlant" class="form-control" asp-items="@(new SelectList(Model.ManufacturedPlantOptions, "Key" , "Value"))">
+        <select asp-for="ManufacturedPlant" class="form-control" asp-items="@(new SelectList(Model.ManufacturedPlantOptions, "Key" , "Value"))" disabled>
             <option value="">Select Manufactured Plant</option>
         </select>
         <span asp-validation-for="ManufacturedPlant" class="text-danger"></span>
@@ -81,18 +81,29 @@
 
     <div class="form-group">
         <label asp-for="CheckDigit">Check Digit</label>
-        <select asp-for="CheckDigit" class="form-control" asp-items="@(new SelectList(Model.CheckDigitOptions))">
+        <select asp-for="CheckDigit" class="form-control" asp-items="@(new SelectList(Model.CheckDigitOptions))" disabled>
             <option value="">Select Check Digit</option>
         </select>
         <span asp-validation-for="CheckDigit" class="text-danger"></span>
 
     </div>
+
     <div class="d-flex justify-content-center mt-3 " style="border-right:inherit !important;">
-      
-        <div class="w-10 btn-group d-flex justify-content-between align-items-center gap-2" role="group">
-            <button type="submit" class="btn btn-outline-dark">Register</button>
+       
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
+                <a class="btn btn-primary " asp-controller="VehicleModel" asp-action="ModelList" style="margin-left:10px;background-color:transparent;">
+                    <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Back To List
+                </a>
+        </div>
+
+        
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
+            <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Remove
+            </button>
         </div>
 
     </div>
-    
+
+    <partial name="_DeleteConfirmation"/>
 </form>
