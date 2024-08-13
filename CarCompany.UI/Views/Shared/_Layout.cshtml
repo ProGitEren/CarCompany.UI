@@ -62,6 +62,16 @@
                             }
                         }
 
+                         @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Engine" asp-action="EngineList">Engines</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="VehicleModel" asp-action="ModelList">Models</a>
+                            </li>
+                        }
+
                        
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="color:dimgrey" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>

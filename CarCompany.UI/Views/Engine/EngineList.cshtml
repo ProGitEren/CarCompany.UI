@@ -1,0 +1,56 @@
+﻿@model List<EngineViewModel>
+
+@{
+    ViewData["Title"] = "Engines";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="title-section text-light">Engines</h2>
+        
+            <a asp-controller="Engine" asp-action="Create" class="btn btn-primary" style="background-color: cornflowerblue;color:white">
+                <i class="bi bi-plus-circle"></i> &nbsp; New Engine
+            </a>
+        
+
+    </div>
+
+    <div class="row">
+        @foreach (var Engine in Model)
+        {
+            <div class="col-md-4 mb-5">
+                <div class="card text-white bg-dark mb-3 border-5" style="max-width: 20rem;border-radius:40px;">
+                    <div class="card-header"> <h3 class="header-section text-center">@Engine.EngineCode</h3></div>
+                    <div class="card-body">
+                        <p class="card-text"><strong>Engine Name:</strong> @Engine.EngineName </p>
+                        <p class="card-text"><strong>Cylinder Type:</strong> @Engine.Cylinder.ToString()</p>
+                        <p class="card-text"><strong>HP:</strong> @Engine.Hp</p>
+                        <p class="card-text"><strong>Volume:</strong> @Engine.Volume</p>
+                        <p class="card-text"><strong>Torque:</strong> @Engine.Torque</p>
+                        <p class="card-text"><strong>Diameter (cm):</strong> @Engine.diameterCm</p>
+                        <p class="card-text"><strong>Compression Ratio (cm):</strong> @Engine.CompressionRatio : 1</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <div class="widht- -group d-flex justify-content-center align-items-center me-2" role="group">
+                            
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-outline-info me-2" asp-controller="Engine" asp-action="Update" asp-route-id="@Engine.Id">
+                                    <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
+                                </a>
+                                <a class="btn btn-outline-danger" asp-controller="Engine" asp-action="Delete" asp-route-id="@Engine.Id">
+                                    <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                                </a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-5">
+        <a class="btn btn-dark" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+    </div>
+</div>

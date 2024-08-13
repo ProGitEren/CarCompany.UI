@@ -1,5 +1,6 @@
 ﻿
 using Infrastructure.Models.Enums;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,6 +25,8 @@ namespace Infrastucture.DTO.Dto_VehicleModels
         public string ManufacturedPlant { get; set; }// 1 letter
         public string CheckDigit { get; set; }
         public int Quantity { get; set; }
+        public IFormFile ModelPicture { get; set; }
+
 
 
     }

@@ -9,6 +9,6 @@ namespace Infrastructure.Mappings
     public static class SecurityCodeMapper
     {
         public static readonly List<string> SecurityCodes = 
-            "01234566789X".Select(c => c.ToString()).ToList();
+            "0123456789X".Select(c => c.ToString()).ToList();
     }
 }

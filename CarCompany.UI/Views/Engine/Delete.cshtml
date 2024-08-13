@@ -1,0 +1,86 @@
+﻿@model EngineViewModel
+<br>
+<br>
+<h2 class="title-section">Delete Engine</h2>
+<hr />
+
+
+
+<form asp-action="DeletePost" method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="EngineCode">Engine Code (must be 5 digits)</label>
+        <input type="text" class="form-control" asp-for="EngineCode" disabled/>
+        <span asp-validation-for="EngineCode" class="text-danger"></span>
+
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Cylinder">Cylinder Type</label>
+        <select asp-for="Cylinder" class="form-control" asp-items="@(new SelectList(Model.CylinderTypeOptions, "Key", "Value"))" disabled>
+            <option value="">Select Cylinder Type</option>
+        </select>
+        <span asp-validation-for="Cylinder" class="text-danger"></span>
+
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="EngineName">Engine Name</label>
+        <input type="text" class="form-control" asp-for="EngineName" disabled/>
+        <span asp-validation-for="EngineName" class="text-danger"></span>
+
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Hp">HP</label>
+        <input type="number" class="form-control" asp-for="Hp" disabled/>
+        <span asp-validation-for="Hp" class="text-danger"></span>
+
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Volume">Volume (L)</label>
+        <input type="number" class="form-control" asp-for="Volume" disabled />
+        <span asp-validation-for="Volume" class="text-danger"></span>
+
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="diameterCm">Diameter (cm)</label>
+        <input type="number" class="form-control" asp-for="diameterCm" disabled />
+        <span asp-validation-for="diameterCm" class="text-danger"></span>
+
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CompressionRatio">Compression Ratio</label>
+        <input type="number" class="form-control" asp-for="CompressionRatio" disabled />
+        <span asp-validation-for="CompressionRatio" class="text-danger"></span>
+
+    </div>
+
+
+    <div class="d-flex justify-content-center mt-3 " style="border-right:inherit !important;">
+
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
+            <a class="btn btn-primary " asp-controller="Engine" asp-action="EngineList" style="margin-left:10px;background-color:transparent;">
+                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Back To List
+            </a>
+        </div>
+
+
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
+            <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Remove
+            </button>
+        </div>
+
+    </div>
+
+    <partial name="_DeleteConfirmation" />
+</form>
