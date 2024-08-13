@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Infrastructure.Mappings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,26 +10,24 @@ namespace Infrastructure.Models.ViewModels.VehicleModels
 {
     public class VehicleModelViewModel
     {
-
         public int? Id { get; set; }
         public VehicleType VehicleType { get; set; }
-
         public string EngineCode { get; set; }
-
         public string ModelShortName { get; set; }
-
         public string ModelLongName { get; set; }
-
-        public int Quantity { get; set; }
-
         public int ModelYear { get; set; }
+        public int ManufacturedCountry { get; set; } // Selected value
+        public string Manufacturer { get; set; } // Selected value
+        public string ManufacturedPlant { get; set; } // Selected value
+        public string CheckDigit { get; set; } // Selected value
 
-        public int ManufacturedCountry { get; set; } //1 number
-        public string Manufacturer { get; set; } //2 letter
-        public string securityCode { get; set; } // 1 letter
-        public string ManufacturedYear { get; set; } // 1 letter
-        public string ManufacturedPlant { get; set; }// 1 letter
-        public string CheckDigit { get; set; }
+        // Select Options
+        public Dictionary<int, string> ManufacturedCountryOptions { get; set; } = ManufacturingCountryMapper.CountryMapping;
+        public Dictionary<string, string> ManufacturerOptions { get; set; } = ManufacturerMapper.ManufacturerMapping;
+        public Dictionary<string, string> ManufacturedPlantOptions { get; set; } = ManufacturedPlantMapper.PlantMapping;
+        public List<string> CheckDigitOptions { get; set; } = SecurityCodeMapper.SecurityCodes;
+        public Dictionary<VehicleType, string> VehicleTypeOptions { get; set; } = Enum.GetValues(typeof(VehicleType)).Cast<VehicleType>().ToDictionary(v => v, v => v.ToString());
+        public Dictionary<string, string> EngineCodeOptions { get; set; } = EngineMapper.EngineMapping;
 
 
     }

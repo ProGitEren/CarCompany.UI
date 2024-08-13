@@ -75,6 +75,7 @@ namespace CarCompany.UI.Controllers
             try
             {
                 var vehicle = await _vehicleService.CreateAsync(model);
+                return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
             }
 
             catch (Exception ex) 
@@ -83,8 +84,8 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateVehicle");
 
             }
-            
-                return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+
+            return View(model);
             
           
         }
@@ -92,12 +93,12 @@ namespace CarCompany.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> VehicleDetail(string? email)
         {
-
+            var vehicle = new List<VehicleViewModel>();
             try
             {
-                var vehicles = await _vehicleService.GetVehicleDetailAsync(email);
+                vehicle = await _vehicleService.GetVehicleDetailAsync(email) as List<VehicleViewModel>;
                 _logger.Information($"The vehicles for the user {email} has successfully retrieved");
-                return View(vehicles);
+                return View(vehicle);
             }
 
             catch (Exception ex)
@@ -107,7 +108,7 @@ namespace CarCompany.UI.Controllers
 
             }
 
-            return RedirectToAction("UsersList", "Account");
+            return View(vehicle);
         }
 
         [HttpGet]
@@ -167,13 +168,14 @@ namespace CarCompany.UI.Controllers
                     _logger.Warning("Vehicle update failed.");
                 }
                 _logger.Information("Vehicle update successful.");
+                return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
             }
             catch (Exception ex)
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
             }
 
-            return User.IsInRole("Admin") ? RedirectToAction("Vehicles","Vehicle") : RedirectToAction("UserVehicles","Vehicle");
+            return View(model);
         }
 
         [HttpGet]
@@ -212,6 +214,7 @@ namespace CarCompany.UI.Controllers
                 }
                 TempData["success"] = "The vehicle successfully deleted.";
                 _logger.Information("Vehicle delete successful.");
+                return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
             }
             catch (Exception ex)
             {

@@ -9,7 +9,7 @@
         <h2 class="title-section text-light">Vehicle Models</h2>
         @if (User.IsInRole("Admin"))
         {
-            <a asp-controller="VehicleModel" asp-action="Create" class="btn btn-primary">
+            <a asp-controller="VehicleModel" asp-action="Create" class="btn btn-primary" style="background-color: cornflowerblue;color:white">
                 <i class="bi bi-plus-circle"></i> &nbsp; New Model
             </a> 
         }
@@ -30,7 +30,19 @@
                         <p class="card-text"><strong>Quantity:</strong> @Model.Quantity</p>
                     </div>
                     <div class="card-footer text-center">
-                        <a asp-controller="Vehicle" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-outline-info mx-1" style="background-color:#1e1d1d  ;">Register Vehicle</a>
+                        <div class="widht- -group d-flex justify-content-center align-items-center me-2" role="group">
+                            <a asp-controller="Vehicle" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-outline-info btn-sm mx-1" style="background-color:#1e1d1d  ;">Register Vehicle</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-outline-info btn-sm  me-2 " asp-controller="VehicleModel" asp-action="Update" asp-route-id="@Model.Id">
+                                    <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
+                                </a>
+                                <a class="btn btn-outline-danger btn-sm  " asp-controller="VehicleModel" asp-action="Delete" asp-route-id="@Model.Id">
+                                    <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                                </a>
+                            }
+                        </div>
+                    
                     </div>
                 </div>
             </div>

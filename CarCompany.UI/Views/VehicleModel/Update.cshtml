@@ -1,13 +1,13 @@
-﻿@model RegisterVehicleModelViewModel
+﻿@model VehicleModelViewModel
 <br>
 <br>
-<h2 class="title-section">Register Vehicle Model</h2>
+<h2 class="title-section">Update Vehicle Model</h2>
 <hr />
 
 
 
-<form asp-action="Create" method="post">
-    
+<form asp-action="Update" method="post">
+
     <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="form-group">
@@ -49,7 +49,7 @@
 
     </div>
 
-   
+
 
     <div class="form-group">
         <label asp-for="ManufacturedCountry">Manufactured Country</label>
@@ -88,11 +88,11 @@
 
     </div>
     <div class="d-flex justify-content-center mt-3 " style="border-right:inherit !important;">
-      
+
         <div class="w-10 btn-group d-flex justify-content-between align-items-center gap-2" role="group">
-            <button type="submit" class="btn btn-outline-dark">Register</button>
+            <button type="submit" class="btn btn-outline-dark">Update</button>
         </div>
 
     </div>
-    
+
 </form>
