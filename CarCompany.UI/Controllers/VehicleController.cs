@@ -59,10 +59,10 @@ namespace CarCompany.UI.Controllers
         {
 
 
-            var model =  new RegisterVehicleViewModel {ModelId = Id };
+            var model = new RegisterVehicleViewModel { ModelId = Id };
             if (Id == null)
             {
-                ExceptionHelper.HandleException(new UIException(System.Net.HttpStatusCode.NotFound, "The Id of the model is null"), null ,_logger, ModelState , "CreateVehicle");
+                ExceptionHelper.HandleException(new UIException(System.Net.HttpStatusCode.NotFound, "The Id of the model is null"), null, _logger, ModelState, "CreateVehicle");
             }
 
             return View(model);
@@ -78,7 +78,7 @@ namespace CarCompany.UI.Controllers
                 return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
             }
 
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 TempData["error"] = "Problem occured on registering the new vehicle.";
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateVehicle");
@@ -86,8 +86,8 @@ namespace CarCompany.UI.Controllers
             }
 
             return View(model);
-            
-          
+
+
         }
 
         [HttpGet]
@@ -158,7 +158,7 @@ namespace CarCompany.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(VehicleViewModel model)
         {
-            
+
             try
             {
                 model = await _vehicleService.UpdateVehicleAsync(model);
