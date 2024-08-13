@@ -55,6 +55,7 @@ namespace Infrastructure.Services
         public async Task<VehicleModelViewModel> CreateAsync(RegisterVehicleModelViewModel viewmodel)
         {
             AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+            var dto = _mapper.Map<RegisterVehicleModelDto>(viewmodel);
             var content = new StringContent(JsonConvert.SerializeObject(_mapper.Map<RegisterVehicleModelDto>(viewmodel)), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync("api/VehicleModel/create-model", content);
 
@@ -66,7 +67,7 @@ namespace Infrastructure.Services
 
                 return model;
             }
-            await ErrorResultHelper.ErrorResult(response);
+                await ErrorResultHelper.ErrorResult(response);
 
             // This line will never be reached, but is required by the compiler
             // because the method signature requires a UserDto return type

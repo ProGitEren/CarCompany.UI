@@ -16,8 +16,6 @@ namespace Infrastructure.Models.ViewModels.VehicleModels
         public int ModelYear { get; set; }
         public int ManufacturedCountry { get; set; } // Selected value
         public string Manufacturer { get; set; } // Selected value
-        public string SecurityCode { get; set; } // Selected value
-        public string ManufacturedYear { get; set; } // Selected value
         public string ManufacturedPlant { get; set; } // Selected value
         public string CheckDigit { get; set; } // Selected value
         public string ModelCode { get; set; }

@@ -53,7 +53,7 @@ namespace CarCompany.UI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
 
@@ -69,167 +69,168 @@ namespace CarCompany.UI.Controllers
                 ManufacturedCountryOptions = ManufacturingCountryMapper.CountryMapping,
                 ManufacturedPlantOptions = ManufacturedPlantMapper.PlantMapping,
                 ManufacturerOptions = ManufacturerMapper.ManufacturerMapping,
-            
+
             };
 
             return View(model);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create(RegisterVehicleViewModel model)
-        //{
+        [HttpPost]
+        public async Task<IActionResult> Create(RegisterVehicleModelViewModel model)
+        {
 
-        //    try
-        //    {
-        //        var vehicle = await _vehicleModelService.CreateAsync(model);
-        //    }
+            try
+            {
+                var vehicle = await _vehicleModelService.CreateAsync(model);
+            }
 
-        //    catch (Exception ex)
-        //    {
-        //        TempData["error"] = "Problem occured on registering the new vehicle.";
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateVehicle");
+            catch (Exception ex)
+            {
+                TempData["error"] = "Problem occured on registering the new vehicle.";
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateVehicle");
 
-        //    }
+            }
 
-        //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
-
-
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> VehicleDetail(string? email)
-        //{
-
-        //    try
-        //    {
-        //        var vehicles = await _vehicleService.GetVehicleDetailAsync(email);
-        //        _logger.Information($"The vehicles for the user {email} has successfully retrieved");
-        //        return View(vehicles);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        TempData["error"] = "Problem occured on Retrieving the user vehicles.";
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "VehicleDetail");
-
-        //    }
-
-        //    return RedirectToAction("UsersList", "Account");
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> Vehicles()
-        //{
-        //    var model = new List<VehicleViewModel>();
-        //    try
-        //    {
-        //        model = await _vehicleService.GetVehiclesAsync() as List<VehicleViewModel>;
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicles could not be found.");
-        //            _logger.Warning("Vehicles retrieval failed.");
-        //        }
-        //        _logger.Information("Vehicles retrieval successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
-
-        //    return View(model);
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> Update(string? Id)
-        //{
-        //    var model = new VehicleViewModel();
-        //    try
-        //    {
-        //        model = await _vehicleService.GetVehicleAsync(Id);
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle retrieval failed.");
-        //        }
-        //        _logger.Information("Vehicle retrieval successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
-
-        //    return View(model);
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> Update(VehicleViewModel model)
-        //{
-
-        //    try
-        //    {
-        //        model = await _vehicleService.UpdateVehicleAsync(model);
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle update failed.");
-        //        }
-        //        _logger.Information("Vehicle update successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
-
-        //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> Delete(string? Id)
-        //{
-        //    var model = new VehicleViewModel();
-        //    try
-        //    {
-        //        model = await _vehicleService.GetVehicleAsync(Id);
-        //        if (model == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle retrieval failed.");
-        //        }
-        //        _logger.Information("Vehicle retrieval successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
-
-        //    return View(model);
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> DeletePost(string? Vin)
-        //{
-
-        //    try
-        //    {
-        //        var stringresult = await _vehicleService.DeleteVehicleAsync(Vin);
-        //        if (stringresult == null)
-        //        {
-        //            ModelState.AddModelError("", "The Vehicle could not be found.");
-        //            _logger.Warning("Vehicle delete failed.");
-        //        }
-        //        TempData["success"] = "The vehicle successfully deleted.";
-        //        _logger.Information("Vehicle delete successful.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
-        //    }
-
-        //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
-        //}
+            return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
 
 
+            //}
+
+            //[HttpGet]
+            //public async Task<IActionResult> VehicleDetail(string? email)
+            //{
+
+            //    try
+            //    {
+            //        var vehicles = await _vehicleService.GetVehicleDetailAsync(email);
+            //        _logger.Information($"The vehicles for the user {email} has successfully retrieved");
+            //        return View(vehicles);
+            //    }
+
+            //    catch (Exception ex)
+            //    {
+            //        TempData["error"] = "Problem occured on Retrieving the user vehicles.";
+            //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "VehicleDetail");
+
+            //    }
+
+            //    return RedirectToAction("UsersList", "Account");
+            //}
+
+            //[HttpGet]
+            //public async Task<IActionResult> Vehicles()
+            //{
+            //    var model = new List<VehicleViewModel>();
+            //    try
+            //    {
+            //        model = await _vehicleService.GetVehiclesAsync() as List<VehicleViewModel>;
+            //        if (model == null)
+            //        {
+            //            ModelState.AddModelError("", "The Vehicles could not be found.");
+            //            _logger.Warning("Vehicles retrieval failed.");
+            //        }
+            //        _logger.Information("Vehicles retrieval successful.");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
+            //    }
+
+            //    return View(model);
+            //}
+
+            //[HttpGet]
+            //public async Task<IActionResult> Update(string? Id)
+            //{
+            //    var model = new VehicleViewModel();
+            //    try
+            //    {
+            //        model = await _vehicleService.GetVehicleAsync(Id);
+            //        if (model == null)
+            //        {
+            //            ModelState.AddModelError("", "The Vehicle could not be found.");
+            //            _logger.Warning("Vehicle retrieval failed.");
+            //        }
+            //        _logger.Information("Vehicle retrieval successful.");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
+            //    }
+
+            //    return View(model);
+            //}
+
+            //[HttpPost]
+            //public async Task<IActionResult> Update(VehicleViewModel model)
+            //{
+
+            //    try
+            //    {
+            //        model = await _vehicleService.UpdateVehicleAsync(model);
+            //        if (model == null)
+            //        {
+            //            ModelState.AddModelError("", "The Vehicle could not be found.");
+            //            _logger.Warning("Vehicle update failed.");
+            //        }
+            //        _logger.Information("Vehicle update successful.");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
+            //    }
+
+            //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+            //}
+
+            //[HttpGet]
+            //public async Task<IActionResult> Delete(string? Id)
+            //{
+            //    var model = new VehicleViewModel();
+            //    try
+            //    {
+            //        model = await _vehicleService.GetVehicleAsync(Id);
+            //        if (model == null)
+            //        {
+            //            ModelState.AddModelError("", "The Vehicle could not be found.");
+            //            _logger.Warning("Vehicle retrieval failed.");
+            //        }
+            //        _logger.Information("Vehicle retrieval successful.");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
+            //    }
+
+            //    return View(model);
+            //}
+
+            //[HttpPost]
+            //public async Task<IActionResult> DeletePost(string? Vin)
+            //{
+
+            //    try
+            //    {
+            //        var stringresult = await _vehicleService.DeleteVehicleAsync(Vin);
+            //        if (stringresult == null)
+            //        {
+            //            ModelState.AddModelError("", "The Vehicle could not be found.");
+            //            _logger.Warning("Vehicle delete failed.");
+            //        }
+            //        TempData["success"] = "The vehicle successfully deleted.";
+            //        _logger.Information("Vehicle delete successful.");
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
+            //    }
+
+            //    return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+            //}
 
 
+
+
+        }
     }
 }
