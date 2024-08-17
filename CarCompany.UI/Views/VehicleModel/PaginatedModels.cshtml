@@ -1,0 +1,311 @@
+﻿@using Infrastucture.Helpers
+@using static Infrastructure.Models.Enums.VehicleEnums
+@model Pagination<VehicleModelUserViewModel>
+
+@{
+    ViewData["Title"] = "Vehicle Models";
+    var SelectIdDictionary = Model.Data.ToDictionary(y => y.Id, y => y.ModelShortName);
+    var VehicleTypeOptions = Enum.GetValues(typeof(VehicleType)).Cast<VehicleType>().ToDictionary(v => v, v => v.ToString());
+
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="title-section text-dark">Vehicle Models</h2>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="VehicleModel" asp-action="Create" class="btn btn-primary" style="background-color: cornflowerblue;color:white">
+                <i class="bi bi-plus-circle"></i> &nbsp; New Model
+            </a>
+        }
+    </div>
+
+    <form method="get" asp-action="PaginatedModels">
+        <div class="row mb-5">
+
+
+            <!-- Search Input -->
+            <div class="col-md-3">
+                <input type="search" name="searchInput" class="form-control bg-dark" placeholder="Search" />
+            </div>
+
+            <!-- Sorting Dropdown -->
+            <div class="col-md-2">
+                <select name="sortOptions" class="form-select bg-dark">
+                    <option value="">Sort by...</option>
+                    <option value="PriceAsc">Price: Low to High</option>
+                    <option value="PriceDesc">Price: High to Low</option>
+                    <option value="YearAsc">Year: Low to High</option>
+                    <option value="YearDesc">Year: High to Low</option>
+                    <option value="QuantityAsc">Quantity: Low to High</option>
+                    <option value="QuantityDesc">Quantity: High to Low</option>
+                </select>
+            </div>
+
+            <!-- Filtering Dropdowns -->
+            <div class="col-md-2">
+                <select name="filterModelId" asp-items="@(new SelectList(SelectIdDictionary, "Key" , "Value"))" class="form-select bg-dark">
+                    <option value="">Model Id...</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="vehicleType" asp-items="@(new SelectList(VehicleTypeOptions, "Key" , "Value"))" class="form-select bg-dark">
+                    <option value="">Vehicle Type...</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-1">
+                <select id="startYear" name="StartYear" class="form-select bg-dark" style="overflow-y: scroll;">
+                    <option value="">Start Year...</option>
+                    @for (int year = 1980; year <= 2030; year++)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-1">
+                <select id="endYear" name="EndYear" class="form-select bg-dark" style="overflow-y: scroll;">
+                    <option value="">End Year...</option>
+                    @for (int year = 1980; year <= 2030; year++)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="col-md-1">
+                <button type="submit" class="btn bg-dark">Apply</button>
+            </div>
+
+        </div>
+    </form>
+
+    <div class="row">
+        @foreach (var Model in Model.Data)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card text-white bg-dark border-5" style="border-radius: 40px;">
+                    <div class="card-header">
+                        <h3 class="header-section text-center">@Model.ModelShortName</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="@Model.ModelPicturePath" alt="Model Image" class="img-fluid mb-5" style="max-height: 200px; object-fit: cover; border-radius: 10px;" />
+                        <p class="card-text"><strong>Model Name:</strong> @Model.ModelLongName</p>
+                        <p class="card-text"><strong>Vehicle Type:</strong> @Model.VehicleType</p>
+                        <p class="card-text"><strong>Engine Code:</strong> @Model.EngineCode</p>
+                        <p class="card-text"><strong>Model Year:</strong> @Model.ModelYear</p>
+                        <p class="card-text"><strong>Quantity:</strong> @Model.Quantity</p>
+                        <p class="card-text"><strong>Price:</strong> @Model.Price</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <div class="d-flex justify-content-center align-items-center bg-dark" role="group">
+
+                            <a asp-controller="Vehicle" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-outline-dark mx-1">Register Vehicle</a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-outline-info mx-1" asp-controller="VehicleModel" asp-action="Update" asp-route-id="@Model.Id">
+                                    <i class="bi bi-pencil-fill"></i> Edit
+                                </a>
+                                <a class="btn btn-outline-danger mx-1" asp-controller="VehicleModel" asp-action="Delete" asp-route-id="@Model.Id">
+                                    <i class="bi bi-trash2-fill"></i> Remove
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        @if(Model.TotalCount != 0)
+        {
+            <nav aria-label="Page navigation">
+                <ul class="pagination bg-dark">
+                    @if (Model.PageNumber != 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="PaginatedModels" asp-route-PageNumber="@(Model.PageNumber - 1)"
+                               asp-route-PageSize="@Model.PageSize"
+                               asp-route-StartYear="@ViewData["StartYear"]"
+                               asp-route-EndYear="@ViewData["EndYear"]"
+                               asp-route-filterModelId="@ViewData["filterModelId"]"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]"
+                               asp-route-vehicleType="@ViewData["vehicleType"]">Previous</a>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalCount / Model.PageSize + 1; i++)
+                    {
+                        <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                            <a class="page-link" asp-action="PaginatedModels" asp-route-PageNumber="@i"
+                               asp-route-PageSize="@Model.PageSize"
+                               asp-route-StartYear="@ViewData["StartYear"]"
+                               asp-route-EndYear="@ViewData["EndYear"]"
+                               asp-route-filterModelId="@ViewData["filterModelId"]"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]"
+                               asp-route-vehicleType="@ViewData["vehicleType"]">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.PageNumber < Model.TotalCount / Model.PageSize + 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="PaginatedModels" asp-route-PageNumber="@(Model.PageNumber + 1)"
+                               asp-route-PageSize="@Model.PageSize"
+                               asp-route-StartYear="@ViewData["StartYear"]"
+                               asp-route-EndYear="@ViewData["EndYear"]"
+                               asp-route-filterModelId="@ViewData["filterModelId"]"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]"
+                               asp-route-vehicleType="@ViewData["vehicleType"]">Next</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mt-2">
+    <span></span>
+    <ul class="pagination bg-dark ms-2" >
+        <li class="page-item @(Model.PageSize == 5 ? "active" : "")">
+            <a class="page-link" asp-action="PaginatedModels" asp-route-PageNumber="1"
+               asp-route-PageSize ="5"
+               asp-route-StartYear="@ViewData["StartYear"]"
+               asp-route-EndYear="@ViewData["EndYear"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-vehicleType="@ViewData["vehicleType"]">1-5</a>
+        </li>
+        <li class="page-item @(Model.PageSize == 10 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedModels" asp-route-PageNumber="1"
+               asp-route-PageSize="10"
+               asp-route-StartYear="@ViewData["StartYear"]"
+               asp-route-EndYear="@ViewData["EndYear"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-vehicleType="@ViewData["vehicleType"]">1-10</a>
+        </li>
+        <li class="page-item  @(Model.PageSize == 25 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedModels" asp-route-PageNumber="1"
+               asp-route-PageSize="25"
+               asp-route-StartYear="@ViewData["StartYear"]"
+               asp-route-EndYear="@ViewData["EndYear"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-vehicleType="@ViewData["vehicleType"]">1-25</a>
+        </li>
+        
+    </ul>
+</div>
+
+    <div class="text-center mt-5">
+        <a class="btn btn-outline-transparent" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+    </div>
+</div>
+
+
+@* <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var startYearInput = document.getElementById('startYear');
+        var endYearInput = document.getElementById('endYear');
+
+        // Function to update min/max values
+        function updateYearConstraints() {
+            var startYear = parseInt(startYearInput.value);
+            var endYear = parseInt(endYearInput.value);
+
+            if (!isNaN(startYear)) {
+                for (let option of endYearInput.options) {
+                    option.disabled = parseInt(option.value) < startYear;
+                }
+            } else {
+                for (let option of endYearInput.options) {
+                    option.disabled = false; // Enable all options if start year is not set
+                }
+            }
+
+            if (!isNaN(endYear)) {
+                for (let option of startYearInput.options) {
+                    option.disabled = parseInt(option.value) > endYear;
+                }
+            } else {
+                for (let option of startYearInput.options) {
+                    option.disabled = false; // Enable all options if end year is not set
+                }
+            }
+        }
+
+        // Event listeners to trigger updates
+        startYearInput.addEventListener('change', updateYearConstraints);
+        endYearInput.addEventListener('change', updateYearConstraints);
+    });
+</script> *@
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var startYearInput = document.getElementById('startYear');
+        var endYearInput = document.getElementById('endYear');
+
+        var minYear = 1980;
+        var maxYear = 2030;
+
+        // Function to update min/max values
+        function updateYearConstraints() {
+            var startYear = parseInt(startYearInput.value);
+            var endYear = parseInt(endYearInput.value);
+
+            // Adjust the options based on the selected start year
+            if (!isNaN(startYear)) {
+                for (let option of endYearInput.options) {
+                    option.hidden = parseInt(option.value) < startYear;
+                }
+                minYear = startYear;
+            } else {
+                minYear = 1980; // Reset to default min
+                for (let option of endYearInput.options) {
+                    option.hidden = false; // Show all options
+                }
+            }
+
+            // Adjust the options based on the selected end year
+            if (!isNaN(endYear)) {
+                for (let option of startYearInput.options) {
+                    option.hidden = parseInt(option.value) > endYear;
+                }
+                maxYear = endYear;
+            } else {
+                maxYear = 2030; // Reset to default max
+                for (let option of startYearInput.options) {
+                    option.hidden = false; // Show all options
+                }
+            }
+        }
+
+        // Event listeners to trigger updates
+        startYearInput.addEventListener('change', updateYearConstraints);
+        endYearInput.addEventListener('change', updateYearConstraints);
+    });
+</script>
+                    
+<style>
+
+    .pagination > li.active > a
+    {
+        background-color:ghostwhite !important;
+        color: #7b8ab8 !important;
+    }
+
+</style>

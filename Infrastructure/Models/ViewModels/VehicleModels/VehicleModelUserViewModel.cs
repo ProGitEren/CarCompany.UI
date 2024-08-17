@@ -21,6 +21,10 @@ namespace Infrastructure.Models.ViewModels.VehicleModels
         public int Quantity { get; set; }
 
         public int ModelYear { get; set; }
+
+        public string ModelPicturePath { get; set; }
+
+        public decimal Price { get; set; }
        
 
     }

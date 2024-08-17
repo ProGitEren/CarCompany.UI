@@ -1,0 +1,315 @@
+﻿@using Infrastructure.Comparers
+@using Infrastucture.Helpers
+@model Pagination<VehicleViewModel>
+
+@{
+    ViewData["Title"] = "Vehicles";
+    var uniquemodels = Model.Data.Distinct(new VehicleModelIdComparer());
+    var uniqueengines = Model.Data.Distinct(new VehicleEngineIdComparer());
+    
+    var companyVehicles = Model.Data.Where(x => x.UserId == null).OrderBy(y => y.ModelId).ThenBy(o=>o.Vin).ToList();
+    var userVehicles = Model.Data.Except(companyVehicles).OrderBy(y => y.ModelId).ThenBy(o => o.Vin).ToList();
+
+    var uniqueusers = userVehicles.Distinct(new VehicleUserIdComparer());
+
+    var SelectModelIdDict = uniquemodels.ToDictionary(z => z.ModelId, z => z.ModelName);
+    var SelectEngineIdDict = uniqueengines.ToDictionary(z => z.EngineId, z => z.EngineName);
+    var SelectVehicleIdList = Model.Data.Select(z => z.Vin);
+}
+
+<br>
+<br>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="title-section text-light">Vehicles</h2>
+        <a asp-controller="VehicleModel" asp-action="PaginatedModels" class="btn btn-primary text-dark" style="background-color: cornflowerblue;">
+            <i class="bi bi-person-plus"></i> &nbsp; New Vehicle
+        </a>
+    </div>
+
+<hr />
+
+
+    <form method="get" asp-action="PaginatedVehicles">
+        <div class="row mb-5">
+
+
+            <!-- Search Input -->
+            <div class="col-md-3">
+                <input type="search" name="searchInput" class="form-control bg-info" placeholder="Search" />
+            </div>
+
+            <!-- Sorting Dropdown -->
+            <div class="col-md-2">
+                <select name="sortOptions" class="form-select bg-info">
+                    <option value="">Sort by...</option>
+                    <option value="PriceAsc">Price: Low to High</option>
+                    <option value="PriceDesc">Price: High to Low</option>
+                    <option value="YearAsc">Year: Low to High</option>
+                    <option value="YearDesc">Year: High to Low</option>
+                    <option value="DistanceAsc">Distance: Low to High</option>
+                    <option value="DistanceDesc">Distance: High to Low</option>
+                    <option value="FuelAsc">Fuel: Low to High</option>
+                    <option value="FuelDesc">Fuel: High to Low</option>
+                </select>
+            </div>
+
+            <!-- Filtering Dropdowns -->
+            <div class="col-md-2">
+                <select name="filterEngineId" asp-items="@(new SelectList(SelectEngineIdDict, "Key" , "Value"))" class="form-select bg-info">
+                    <option value="">Engine ID...</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="filterModelId" asp-items="@(new SelectList(SelectModelIdDict, "Key","Value"))" class="form-select bg-info">
+                    <option value="">Model ID...</option>
+
+                </select>
+            </div>
+            @if (userVehicles.Count != 0)
+            {
+                var SelectUserIdDict = uniqueusers.ToDictionary(y => y.UserId, x => x.UserName);
+                <div class="col-md-2">
+                    <select name="filterUserId" asp-items="@(new SelectList(SelectUserIdDict, "Key","Value"))" class="form-select bg-info">
+                    <option value="">User Name...</option>
+
+                </select>
+            </div>
+            }
+
+            <div class="col-md-2">
+                <select name="filterVehicleId" asp-items="@(new SelectList(SelectVehicleIdList))" class="form-select bg-dark">
+                    <option value="">Vehicle Id...</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="role" class="form-select bg-dark">
+                    <option value="">Role Name...</option>
+                    <option value="Buyer">Buyer</option>
+                    <option value="Seller">Seller</option>
+                </select>
+            </div>
+
+
+
+            <!-- Submit Button -->
+            <div class="col-md-1">
+                <button type="submit" class="btn bg-dark">Apply</button>
+            </div>
+
+        </div>
+    </form>
+
+
+
+
+<h2 class="title-section text-center">Company Vehicles</h2>
+<hr />
+
+<div style="max-height:700px; overflow-y: scroll;">
+    <table class="table table-hover table-bordered table-striped table-transparent">
+        <thead class="thead-info">
+            <tr class="table-info">
+                <th class="text-center align-middle">VIN</th>
+                <th class="text-center align-middle">Model Name</th>
+                <th class="text-center align-middle">Engine Name</th>
+                <th class="text-center align-middle">Average Fuel In</th>
+                <th class="text-center align-middle">Average Fuel Out</th>
+                <th class="text-center align-middle">CO Emission</th>
+                <th class="text-center align-middle">Fuel Capacity</th>
+                <th class="text-center align-middle">Max Allowed Weight</th>
+                <th class="text-center align-middle">Min Weight</th>
+                <th class="text-center align-middle">Baggage Volume</th>
+                <th class="text-center align-middle">Driven KM</th>
+                <th class="text-center align-middle">Model ID</th>
+                <th class="text-center align-middle">Engine ID</th>
+                <th class="text-center align-middle"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in companyVehicles)
+            {
+                <tr class="table-info">
+                    <td class="text-body text-center align-middle">@vehicle.Vin</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelName</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineName</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelin</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelout</td>
+                    <td class="text-body text-center align-middle">@vehicle.COemmission</td>
+                    <td class="text-body text-center align-middle">@vehicle.FuelCapacity</td>
+                    <td class="text-body text-center align-middle">@vehicle.MaxAllowedWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.MinWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.BaggageVolume</td>
+                    <td class="text-body text-center align-middle">@vehicle.DrivenKM</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelId</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineId</td>
+                    <td class="text-body text-center align-middle">
+                        <div class="-group d-flex justify-content-center align-items-center" role="group">
+                            <a class="btn btn-outline-info btn-sm me-2" asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin">
+                                <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
+                            </a>
+                            <a class="btn btn-outline-danger btn-sm" asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin">
+                                <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<h2 class="title-section text-center mt-5">User Vehicles</h2>
+<hr />
+
+<div style="max-height:700px; overflow-y: scroll;">
+    <table class="table table-hover table-bordered table-striped table-transparent">
+        <thead class="thead-info">
+            <tr class="table-info">
+                <th class="text-center align-middle">VIN</th>
+                <th class="text-center align-middle">User Name</th>
+                <th class="text-center align-middle">Model Name</th>
+                <th class="text-center align-middle">Engine Name</th>
+                <th class="text-center align-middle">Average Fuel In</th>
+                <th class="text-center align-middle">Average Fuel Out</th>
+                <th class="text-center align-middle">CO Emission</th>
+                <th class="text-center align-middle">Fuel Capacity</th>
+                <th class="text-center align-middle">Max Allowed Weight</th>
+                <th class="text-center align-middle">Min Weight</th>
+                <th class="text-center align-middle">Baggage Volume</th>
+                <th class="text-center align-middle">Driven KM</th>
+                <th class="text-center align-middle">Model ID</th>
+                <th class="text-center align-middle">Engine ID</th>
+                <th class="text-center align-middle"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var vehicle in userVehicles)
+            {
+                <tr class="table-info">
+                    <td class="text-body text-center align-middle">@vehicle.Vin</td>
+                    <td class="text-body text-center align-middle">@vehicle.UserName</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelName</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineName</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelin</td>
+                    <td class="text-body text-center align-middle">@vehicle.Averagefuelout</td>
+                    <td class="text-body text-center align-middle">@vehicle.COemmission</td>
+                    <td class="text-body text-center align-middle">@vehicle.FuelCapacity</td>
+                    <td class="text-body text-center align-middle">@vehicle.MaxAllowedWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.MinWeight</td>
+                    <td class="text-body text-center align-middle">@vehicle.BaggageVolume</td>
+                    <td class="text-body text-center align-middle">@vehicle.DrivenKM</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelId</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+    <div class="d-flex justify-content-center mt-4">
+        @if (Model.TotalCount != 0)
+        {
+            <nav aria-label="Page navigation">
+                <ul class="pagination bg-dark">
+                    @if (Model.PageNumber != 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="@(Model.PageNumber - 1)"
+                               asp-route-PageSize="@(Model.PageSize)"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]"
+                               asp-route-Role="@ViewData["role"]"
+                               asp-route-filterUserId="@ViewData["filterUserId"]"
+                               asp-route-filterEngineId="@ViewData["filterEngineId"]" 
+                               asp-route-filterModelId="@ViewData["filterModelId"]" >Previous</a>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalCount / Model.PageSize + 1; i++)
+                    {
+                        <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                            <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="@i"
+                               asp-route-PageSize="@(Model.PageSize)"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]"
+                               asp-route-Role="@ViewData["role"]"
+                               asp-route-filterUserId="@ViewData["filterUserId"]"
+                               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                               asp-route-filterModelId="@ViewData["filterModelId"]">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.PageNumber < Model.TotalCount / Model.PageSize + 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="@(Model.PageNumber + 1)"
+                               asp-route-PageSize="@(Model.PageSize)"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]"
+                               asp-route-Role="@ViewData["role"]"
+                               asp-route-filterUserId="@ViewData["filterUserId"]"
+                               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                               asp-route-filterModelId="@ViewData["filterModelId"]">Next</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mt-2">
+    <span></span>
+    <ul class="pagination bg-dark ms-2">
+        <li class="page-item @(Model.PageSize == 5 ? "active" : "")">
+            <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="1"
+               asp-route-PageSize="5"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-Role="@ViewData["role"]"
+               asp-route-filterUserId="@ViewData["filterUserId"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]">1-5</a>
+        </li>
+        <li class="page-item @(Model.PageSize == 10 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="1"
+               asp-route-PageSize="10"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-Role="@ViewData["role"]"
+               asp-route-filterUserId="@ViewData["filterUserId"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]">1-10</a>
+        </li>
+        <li class="page-item  @(Model.PageSize == 25 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="1"
+               asp-route-PageSize="25"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-Role="@ViewData["role"]"
+               asp-route-filterUserId="@ViewData["filterUserId"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]">1-25</a>
+        </li>
+
+    </ul>
+</div>
+
+<div class="container">
+    <a class="btn btn-dark mt-4" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+</div>
+
+<style>
+
+    .pagination > li.active > a {
+        background-color: ghostwhite !important;
+        color: #7b8ab8 !important;
+    }
+
+</style>

@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Mappings;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,10 @@ namespace Infrastructure.Models.ViewModels.VehicleModels
         public string Manufacturer { get; set; } // Selected value
         public string ManufacturedPlant { get; set; } // Selected value
         public string CheckDigit { get; set; } // Selected value
+        public IFormFile ModelPicture { get; set; }
+        public decimal Price { get; set; }
+
+
 
         // Select Options
         public Dictionary<int, string> ManufacturedCountryOptions { get; set; } = ManufacturingCountryMapper.CountryMapping;

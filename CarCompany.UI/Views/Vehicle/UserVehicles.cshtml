@@ -8,7 +8,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="title-section text-light">Vehicles</h2>
-        <a asp-controller="VehicleModel" asp-action="ModelList" class="btn btn-primary text-dark" style="background-color: cornflowerblue;">
+        <a asp-controller="VehicleModel" asp-action="PaginatedModels" class="btn btn-primary text-dark" style="background-color: cornflowerblue;">
             <i class="bi bi-person-plus"></i> &nbsp; New Vehicle
         </a>
     </div>
@@ -22,6 +22,8 @@
                         VIN: @vehicle.Vin
                     </div>
                     <div class="card-body">
+                        <p><strong>Model Name:</strong> @vehicle.ModelName</p>
+                        <p><strong>Engine Name:</strong> @vehicle.EngineName</p>
                         <p><strong>Average Fuel In:</strong> @vehicle.Averagefuelin</p>
                         <p><strong>Average Fuel Out:</strong> @vehicle.Averagefuelout</p>
                         <p><strong>CO Emission:</strong> @vehicle.COemmission</p>

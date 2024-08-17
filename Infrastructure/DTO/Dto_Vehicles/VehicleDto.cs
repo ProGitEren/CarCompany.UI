@@ -9,6 +9,8 @@ namespace Infrastructure.DTO.Dto_Vehicles
     public class VehicleDto
     {
         public string Vin { get; set; }
+        public string ModelName { get; set; }
+        public string EngineName { get; set; }
         public string UserName { get; set; }
         public decimal Averagefuelin { get; set; }
         public decimal Averagefuelout { get; set; }

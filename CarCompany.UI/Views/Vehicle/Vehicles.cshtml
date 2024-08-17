@@ -12,7 +12,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="title-section text-light">Vehicles</h2>
-        <a asp-controller="VehicleModel" asp-action="ModelList" class="btn btn-primary text-dark" style="background-color: cornflowerblue;">
+        <a asp-controller="VehicleModel" asp-action="PaginatedModels" class="btn btn-primary text-dark" style="background-color: cornflowerblue;">
             <i class="bi bi-person-plus"></i> &nbsp; New Vehicle
         </a>
     </div>
@@ -27,6 +27,8 @@
         <thead class="thead-info">
             <tr class="table-info">
                 <th class="text-center align-middle">VIN</th>
+                <th class="text-center align-middle">Model Name</th>
+                <th class="text-center align-middle">Engine Name</th>
                 <th class="text-center align-middle">Average Fuel In</th>
                 <th class="text-center align-middle">Average Fuel Out</th>
                 <th class="text-center align-middle">CO Emission</th>
@@ -45,6 +47,8 @@
             {
                 <tr class="table-info">
                     <td class="text-body text-center align-middle">@vehicle.Vin</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelName</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineName</td>
                     <td class="text-body text-center align-middle">@vehicle.Averagefuelin</td>
                     <td class="text-body text-center align-middle">@vehicle.Averagefuelout</td>
                     <td class="text-body text-center align-middle">@vehicle.COemmission</td>
@@ -80,6 +84,8 @@
             <tr class="table-info">
                 <th class="text-center align-middle">VIN</th>
                 <th class="text-center align-middle">User Name</th>
+                <th class="text-center align-middle">Model Name</th>
+                <th class="text-center align-middle">Engine Name</th>
                 <th class="text-center align-middle">Average Fuel In</th>
                 <th class="text-center align-middle">Average Fuel Out</th>
                 <th class="text-center align-middle">CO Emission</th>
@@ -99,6 +105,8 @@
                 <tr class="table-info">
                     <td class="text-body text-center align-middle">@vehicle.Vin</td>
                     <td class="text-body text-center align-middle">@vehicle.UserName</td>
+                    <td class="text-body text-center align-middle">@vehicle.ModelName</td>
+                    <td class="text-body text-center align-middle">@vehicle.EngineName</td>
                     <td class="text-body text-center align-middle">@vehicle.Averagefuelin</td>
                     <td class="text-body text-center align-middle">@vehicle.Averagefuelout</td>
                     <td class="text-body text-center align-middle">@vehicle.COemmission</td>

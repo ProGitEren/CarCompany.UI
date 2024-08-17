@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Mappings;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using static Infrastructure.Models.Enums.VehicleEnums;
 
 namespace Infrastructure.Models.ViewModels.VehicleModels
 {
-    public class VehicleModelViewModel
+    public class UpdateVehicleModelViewModel
     {
         public int? Id { get; set; }
         public VehicleType VehicleType { get; set; }
@@ -20,8 +21,13 @@ namespace Infrastructure.Models.ViewModels.VehicleModels
         public string Manufacturer { get; set; } // Selected value
         public string ManufacturedPlant { get; set; } // Selected value
         public string CheckDigit { get; set; } // Selected value
-        public string ModelPicturePath { get; set; }
+        public IFormFile ModelPicture { get; set; }
         public decimal Price { get; set; }
+        public string ExistingImagePath { get; set; }
+
+
+
+
 
         // Select Options
         public Dictionary<int, string> ManufacturedCountryOptions { get; set; } = ManufacturingCountryMapper.CountryMapping;
@@ -30,7 +36,6 @@ namespace Infrastructure.Models.ViewModels.VehicleModels
         public List<string> CheckDigitOptions { get; set; } = SecurityCodeMapper.SecurityCodes;
         public Dictionary<VehicleType, string> VehicleTypeOptions { get; set; } = Enum.GetValues(typeof(VehicleType)).Cast<VehicleType>().ToDictionary(v => v, v => v.ToString());
         public Dictionary<string, string> EngineCodeOptions { get; set; } = EngineMapper.EngineMapping;
-
 
     }
 }

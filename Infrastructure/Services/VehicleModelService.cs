@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Infrastructure.DTO.Dto_Users;
+using Infrastructure.DTO.Dto_VehicleModels;
 using Infrastructure.DTO.Dto_Vehicles;
 using Infrastructure.Exceptions;
 using Infrastructure.Helpers;
@@ -7,11 +8,14 @@ using Infrastructure.Interfaces;
 using Infrastructure.Models.ViewModels.VehicleModels;
 using Infrastructure.Models.ViewModels.Vehicles;
 using Infrastucture.DTO.Dto_VehicleModels;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,11 +56,96 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<VehicleModelViewModel> CreateAsync(RegisterVehicleModelViewModel viewmodel)
+        public async Task<Pagination<VehicleModelDto>> GetModelsAsync(VehiclemodelParams modelParams) 
         {
             AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
-            var dto = _mapper.Map<RegisterVehicleModelDto>(viewmodel);
-            var content = new StringContent(JsonConvert.SerializeObject(_mapper.Map<RegisterVehicleModelDto>(viewmodel)), Encoding.UTF8, "application/json");
+
+            var builder = new StringBuilder();
+            builder.Append($"?PageNumber={modelParams.PageNumber}");
+            builder.Append($"&Pagesize={modelParams.Pagesize}");
+
+            if (!string.IsNullOrEmpty(modelParams.Search))
+            {
+                builder.Append($"&Search={modelParams.Search}");
+            }
+
+            if (!string.IsNullOrEmpty(modelParams.Sorting))
+            {
+                builder.Append($"&Sorting={modelParams.Sorting}");
+            }
+            if (!string.IsNullOrEmpty(modelParams.VehicleType))
+            {
+                builder.Append($"&VehicleType={modelParams.VehicleType}");
+            }
+
+            if (modelParams.ModelId.HasValue)
+            builder.Append($"&ModelId={modelParams.ModelId.Value}");
+            if (modelParams.StartingModelYear.HasValue)
+            builder.Append($"&StartingModelYear={modelParams.StartingModelYear.Value}");
+            if (modelParams.EndingModelYear.HasValue)
+                builder.Append($"&EndingModelYear={modelParams.EndingModelYear.Value}");
+
+            //if (!string.IsNullOrEmpty(modelParams.Sorting))
+            //{
+            //    builder.Append($"&Sorting={modelParams.Sorting}");
+            //}
+
+            //if (modelParams.ModelId.HasValue)
+            //{
+            //    builder.Append($"&ModelId={modelParams.ModelId.Value}");
+            //}
+            //else
+            //{
+            //    builder.Append($"&ModelId=null");
+            //}
+
+            //if (modelParams.ModelYear.HasValue)
+            //{
+            //    builder.Append($"&ModelYear={modelParams.ModelYear.Value}");
+            //}
+            //else
+            //{
+            //    builder.Append($"&ModelYear=null");
+            //}
+            
+            var queryString = builder.ToString();
+            var response = await _httpClient.GetAsync($"api/VehicleModel/get-models{queryString}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Pagination<VehicleModelDto>>(content);
+            }
+
+            await ErrorResultHelper.ErrorResult(response);
+
+            // This line will never be reached, but is required by the compiler
+            // because the method signature requires a UserDto return type
+
+            throw new UIException(response.StatusCode, "Failed.");
+        }
+        public async Task<VehicleModelViewModel> CreateAsync(RegisterVehicleModelViewModel viewModel)
+        {
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+            //var dto = _mapper.Map<RegisterVehicleModelDto>(viewModel);
+            var content = new MultipartFormDataContent();
+            content.Add(new StringContent(viewModel.ModelShortName), nameof(viewModel.ModelShortName));
+            content.Add(new StringContent(viewModel.ModelLongName), nameof(viewModel.ModelLongName));
+            content.Add(new StringContent(viewModel.ModelYear.ToString()), nameof(viewModel.ModelYear));
+            content.Add(new StringContent(viewModel.VehicleType.ToString()), nameof(viewModel.VehicleType));
+            content.Add(new StringContent(viewModel.EngineCode), nameof(viewModel.EngineCode));
+            content.Add(new StringContent(viewModel.Price.ToString()), nameof(viewModel.Price));
+            content.Add(new StringContent(viewModel.ManufacturedCountry.ToString()), nameof(viewModel.ManufacturedCountry));
+            content.Add(new StringContent(viewModel.Manufacturer), nameof(viewModel.Manufacturer));
+            content.Add(new StringContent(viewModel.ManufacturedPlant), nameof(viewModel.ManufacturedPlant));
+            content.Add(new StringContent(viewModel.CheckDigit), nameof(viewModel.CheckDigit));
+
+            if (viewModel.ModelPicture != null)
+            {
+                var fileContent = new StreamContent(viewModel.ModelPicture.OpenReadStream());
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(viewModel.ModelPicture.ContentType);
+                content.Add(fileContent, nameof(viewModel.ModelPicture), viewModel.ModelPicture.FileName);
+            }
             var response = await _httpClient.PostAsync("api/VehicleModel/create-model", content);
 
             if (response.IsSuccessStatusCode)
@@ -98,20 +187,40 @@ namespace Infrastructure.Services
             throw new UIException(response.StatusCode, "Failed.");
         }
 
-        public async Task<VehicleModelViewModel> UpdateVehicleModelAsync(VehicleModelViewModel model)
+        public async Task<VehicleModelViewModel> UpdateVehicleModelAsync(UpdateVehicleModelViewModel model)
         {
             AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
 
-            var content = new StringContent(JsonConvert.SerializeObject(_mapper.Map<VehicleModelDto>(model)), Encoding.UTF8, "application/json");
+
+            var content = new MultipartFormDataContent();
+            content.Add(new StringContent(model.ModelShortName), nameof(model.ModelShortName));
+            content.Add(new StringContent(model.ModelLongName), nameof(model.ModelLongName));
+            content.Add(new StringContent(model.ModelYear.ToString()), nameof(model.ModelYear));
+            content.Add(new StringContent(model.VehicleType.ToString()), nameof(model.VehicleType));
+            content.Add(new StringContent(model.EngineCode), nameof(model.EngineCode));
+            content.Add(new StringContent(model.Price.ToString()), nameof(model.Price));
+            content.Add(new StringContent(model.ManufacturedCountry.ToString()), nameof(model.ManufacturedCountry));
+            content.Add(new StringContent(model.Manufacturer), nameof(model.Manufacturer));
+            content.Add(new StringContent(model.ManufacturedPlant), nameof(model.ManufacturedPlant));
+            content.Add(new StringContent(model.CheckDigit), nameof(model.CheckDigit));
+            content.Add(new StringContent(model.Id.ToString()), nameof(model.Id));
+
+            if (model.ModelPicture != null)
+            {
+                var fileContent = new StreamContent(model.ModelPicture.OpenReadStream());
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(model.ModelPicture.ContentType);
+                content.Add(fileContent, nameof(model.ModelPicture), model.ModelPicture.FileName);
+            }
+
             var response = await _httpClient.PutAsync("api/VehicleModel/update-model", content);
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var vehiclemodel = JsonConvert.DeserializeObject<VehicleModelDto>(json);
-                model = _mapper.Map<VehicleModelViewModel>(vehiclemodel);
+                var resultmodel = _mapper.Map<VehicleModelViewModel>(vehiclemodel);
 
-                return model;
+                return resultmodel;
             }
             await ErrorResultHelper.ErrorResult(response);
 

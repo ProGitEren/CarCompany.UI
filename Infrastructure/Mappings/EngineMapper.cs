@@ -16,10 +16,10 @@ namespace Infrastructure.Mappings
                     { "EN101", "Economy 1.6L Inline 4 Engine" },
                     { "EN202", "Economy 2.0L Inline 4 Engine" },
 
-                    { "F1V8", "Ford V8 Engine" },
-                    { "F2EM", "Ford Electric Motor" },
-                    { "F3HY", "Ford Hybrid Engine" },
-                    { "F4V6", "Ford V6 Turbo Engine" },
+                    { "F01V8", "Ford V8 Engine" },
+                    { "F02EM", "Ford Electric Motor" },
+                    { "F03HY", "Ford Hybrid Engine" },
+                    { "F04V6", "Ford V6 Turbo Engine" },
 
                     { "T01V8", "Toyota V8 Engine" },
                     { "T02EM", "Toyota Electric Motor" },
@@ -42,6 +42,6 @@ namespace Infrastructure.Mappings
                     { "M04V6", "Mercedes V6 Turbo Engine" }
                 };
 
-
+    
     }
 }

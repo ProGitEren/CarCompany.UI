@@ -4,8 +4,11 @@ using Infrastructure.Exceptions;
 using Infrastructure.Helpers;
 using Infrastructure.Interfaces;
 using Infrastructure.Models.ViewModels.Users;
+using Infrastructure.Models.ViewModels.VehicleModels;
 using Infrastructure.Models.ViewModels.Vehicles;
 using Infrastructure.Services;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -134,6 +137,55 @@ namespace CarCompany.UI.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> PaginatedVehicles(string? role,string? filterUserId, int? filterModelId,int? filterEngineId, string? filterVehicleId,
+           string? sortoptions, string? searchInput, int PageNumber = 1, int PageSize = 10)
+        {
+
+            var param = new VehicleParams
+            {
+                Search = searchInput,
+                Sorting = sortoptions,
+                ModelId = filterModelId,
+                VehicleId = filterVehicleId,
+                EngineId = filterEngineId,
+                PageNumber = PageNumber,
+                Pagesize = PageSize,
+                Role = role,
+                UserId = filterUserId,
+            };
+
+            // ViewDatas
+            ViewData["role"] = role;
+            ViewData["filterUserId"] = filterUserId;
+            ViewData["filterEngineId"] = filterEngineId;
+            ViewData["filterModelId"] = filterModelId;
+            ViewData["sortoptions"] = sortoptions;
+            ViewData["searchInput"] = searchInput;
+
+            try
+            {
+                var result = await _vehicleService.GetVehiclesAsync(param);
+                if (result == null)
+                {
+                    ModelState.AddModelError("", "The Models could not be found.");
+                    _logger.Warning("Model retrieval failed: Model could not found");
+                }
+                _logger.Information("Model retrieval successful.");
+                var model = _mapper.Map<Pagination<VehicleViewModel>>(result);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetModels");
+            }
+
+            return RedirectToAction("ModelList", "VehicleModel");
+        }
+
+
+
+
+        [HttpGet]
         public async Task<IActionResult> Update(string? Id)
         {
             var model = new VehicleViewModel();
@@ -229,3 +281,4 @@ namespace CarCompany.UI.Controllers
 
     }
 }
+

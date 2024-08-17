@@ -1,19 +1,15 @@
-﻿
-using Infrastructure.Models.Enums;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Infrastructure.Models.Enums.VehicleEnums;
 
-namespace Infrastucture.DTO.Dto_VehicleModels
+namespace Infrastructure.DTO.Dto_VehicleModels
 {
-    public class VehicleModelDto
+    public class UpdateVehicleModelDto
     {
-
         public int? Id { get; set; }
         public VehicleType VehicleType { get; set; }
         public string EngineCode { get; set; }
@@ -24,9 +20,9 @@ namespace Infrastucture.DTO.Dto_VehicleModels
         public string Manufacturer { get; set; } //2 letter
         public string ManufacturedPlant { get; set; }// 1 letter
         public string CheckDigit { get; set; }
-        public int Quantity { get; set; }
-        public string ModelPicturePath { get; set; }
+        public IFormFile? ModelPicture { get; set; } // NUllable property is very important
         public decimal Price { get; set; }
+
 
 
     }

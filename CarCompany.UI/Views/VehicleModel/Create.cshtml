@@ -6,7 +6,7 @@
 
 
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     
     <div asp-validation-summary="All" class="text-danger"></div>
 
@@ -33,7 +33,7 @@
 
     <div class="form-group">
         <label asp-for="VehicleType">Vehicle Type</label>
-        <select asp-for="VehicleType" class="form-control" asp-items="@(new SelectList(Model.VehicleTypeOptions, "Key", "Value"))">
+        <select required asp-for="VehicleType" class="form-control" asp-items="@(new SelectList(Model.VehicleTypeOptions, "Key", "Value"))">
             <option value="">Select Vehicle Type</option>
         </select>
         <span asp-validation-for="VehicleType" class="text-danger"></span>
@@ -42,18 +42,23 @@
 
     <div class="form-group">
         <label asp-for="EngineCode">Engine Code</label>
-        <select asp-for="EngineCode" class="form-control" asp-items="@(new SelectList(Model.EngineCodeOptions, "Key", "Value"))">
+        <select required asp-for="EngineCode" class="form-control" asp-items="@(new SelectList(Model.EngineCodeOptions, "Key", "Value"))">
             <option value="">Select Engine Code</option>
         </select>
         <span asp-validation-for="EngineCode" class="text-danger"></span>
 
     </div>
 
-   
+    <div class="form-group">
+        <label asp-for="Price" class="form-label">Price</label>
+        <input asp-for="Price" type="number" min="0" step="0.01" placeholder="0.00" class="form-control" required />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
 
     <div class="form-group">
         <label asp-for="ManufacturedCountry">Manufactured Country</label>
-        <select asp-for="ManufacturedCountry" class="form-control" asp-items="@(new SelectList(Model.ManufacturedCountryOptions, "Key", "Value"))">
+        <select required asp-for="ManufacturedCountry" class="form-control" asp-items="@(new SelectList(Model.ManufacturedCountryOptions, "Key", "Value"))">
             <option value="">Select Country</option>
         </select>
         <span asp-validation-for="ManufacturedCountry" class="text-danger"></span>
@@ -62,7 +67,7 @@
 
     <div class="form-group">
         <label asp-for="Manufacturer">Manufacturer</label>
-        <select asp-for="Manufacturer" class="form-control" asp-items="@(new SelectList(Model.ManufacturerOptions, "Key", "Value"))">
+        <select required asp-for="Manufacturer" class="form-control" asp-items="@(new SelectList(Model.ManufacturerOptions, "Key", "Value"))">
             <option value="">Select Manufacturer</option>
         </select>
         <span asp-validation-for="Manufacturer" class="text-danger"></span>
@@ -72,7 +77,7 @@
 
     <div class="form-group">
         <label asp-for="ManufacturedPlant">Manufactured Plant</label>
-        <select asp-for="ManufacturedPlant" class="form-control" asp-items="@(new SelectList(Model.ManufacturedPlantOptions, "Key" , "Value"))">
+        <select required asp-for="ManufacturedPlant" class="form-control" asp-items="@(new SelectList(Model.ManufacturedPlantOptions, "Key" , "Value"))">
             <option value="">Select Manufactured Plant</option>
         </select>
         <span asp-validation-for="ManufacturedPlant" class="text-danger"></span>
@@ -81,15 +86,22 @@
 
     <div class="form-group">
         <label asp-for="CheckDigit">Check Digit</label>
-        <select asp-for="CheckDigit" class="form-control" asp-items="@(new SelectList(Model.CheckDigitOptions))">
+        <select required asp-for="CheckDigit" class="form-control" asp-items="@(new SelectList(Model.CheckDigitOptions))">
             <option value="">Select Check Digit</option>
         </select>
         <span asp-validation-for="CheckDigit" class="text-danger"></span>
 
     </div>
+
+    <div class="form-group">
+        <label asp-for="ModelPicture" class="form-label">Model Picture</label>
+        <input type="file" asp-for="ModelPicture" class="form-control" required />
+        <span asp-validation-for="ModelPicture" class="text-danger"></span>
+    </div>
+
     <div class="d-flex justify-content-center mt-3 " style="border-right:inherit !important;">
       
-        <div class="w-10 btn-group d-flex justify-content-between align-items-center gap-2" role="group">
+        <div class="w-10 d-flex justify-content-between align-items-center gap-2" role="group">
             <button type="submit" class="btn btn-outline-dark">Register</button>
         </div>
 

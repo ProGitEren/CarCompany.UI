@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Vehicle Models";
+    var SelectIdDictionary = Model.ToDictionary(y => y.Id, y => y.ModelShortName);
 }
 
 <div class="container mt-4">
@@ -11,45 +12,126 @@
         {
             <a asp-controller="VehicleModel" asp-action="Create" class="btn btn-primary" style="background-color: cornflowerblue;color:white">
                 <i class="bi bi-plus-circle"></i> &nbsp; New Model
-            </a> 
+            </a>
         }
-
     </div>
+
+    <form method="get" asp-action="PaginatedModels" >
+        <div class="row mb-5">
+        
+        
+                <!-- Search Input -->
+                <div class="col-md-3">
+                    <input type="search" name="searchInput" class="form-control" placeholder="Search" />
+                </div>
+
+                <!-- Sorting Dropdown -->
+                <div class="col-md-2">
+                    <select name="sortOptions" class="form-select">
+                        <option value="">Sort by...</option>
+                        <option value="PriceAsc">Price: Low to High</option>
+                        <option value="PriceDesc">Price: High to Low</option>
+                        <option value="YearAsc">Year: Low to High</option>
+                        <option value="YearDesc">Year: High to Low</option>
+                        <option value="QuantityAsc">Quantity: Low to High</option>
+                        <option value="QuantityDesc">Quantity: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Filtering Dropdowns -->
+                <div class="col-md-2">
+                    <select name="filterModelId" asp-items="@(new SelectList(SelectIdDictionary, "Key" , "Value"))" class="form-select">
+                        <option value="">Filter by Model ID...</option>
+                
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <input type="number" id="startYear" name="StartYear" class="form-control" min="1980" max="2030" placeholder="Starting Model Year"/>
+                </div>
+
+                <!-- Ending Model Year -->
+                <div class="col-md-2">
+                    <input type="number" id="endYear" name="EndYear" class="form-control" min="1980" max="2030" placeholder="Ending Model Year" />
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-outline-dark">Apply</button>
+                </div>
+      
+        </div>
+    </form> 
 
     <div class="row">
         @foreach (var Model in Model)
         {
-            <div class="col-md-4 mb-5">
-                <div class="card text-white bg-dark mb-3 border-5" style="max-width: 20rem;border-radius:40px;">
-                    <div class="card-header"> <h3 class="header-section text-center">@Model.ModelShortName</h3></div>
-                    <div class="card-body">
-                        <p class="card-text"><strong>Model Name:</strong> @Model.ModelLongName </p>
+            <div class="col-md-6 mb-4">
+                <div class="card text-white bg-dark border-5" style="border-radius: 40px;">
+                    <div class="card-header">
+                        <h3 class="header-section text-center">@Model.ModelShortName</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="@Model.ModelPicturePath" alt="Model Image" class="img-fluid mb-3" style="max-height: 200px; object-fit: cover; border-radius: 10px;" />
+                        <p class="card-text"><strong>Model Name:</strong> @Model.ModelLongName</p>
                         <p class="card-text"><strong>Vehicle Type:</strong> @Model.VehicleType</p>
                         <p class="card-text"><strong>Engine Code:</strong> @Model.EngineCode</p>
                         <p class="card-text"><strong>Model Year:</strong> @Model.ModelYear</p>
                         <p class="card-text"><strong>Quantity:</strong> @Model.Quantity</p>
+                        <p class="card-text"><strong>Price:</strong> @Model.Price</p>
                     </div>
                     <div class="card-footer text-center">
-                        <div class="widht- -group d-flex justify-content-center align-items-center me-2" role="group">
-                            <a asp-controller="Vehicle" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-outline-info btn-sm mx-1" style="background-color:#1e1d1d  ;">Register Vehicle</a>
+                        <div class="d-flex justify-content-center align-items-center bg-dark" role="group">
+
+                            <a asp-controller="Vehicle" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-outline-dark mx-1">Register Vehicle</a>
                             @if (User.IsInRole("Admin"))
                             {
-                                <a class="btn btn-outline-info btn-sm  me-2 " asp-controller="VehicleModel" asp-action="Update" asp-route-id="@Model.Id">
-                                    <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
+                                <a class="btn btn-outline-info mx-1" asp-controller="VehicleModel" asp-action="Update" asp-route-id="@Model.Id">
+                                    <i class="bi bi-pencil-fill"></i> Edit
                                 </a>
-                                <a class="btn btn-outline-danger btn-sm  " asp-controller="VehicleModel" asp-action="Delete" asp-route-id="@Model.Id">
-                                    <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                                <a class="btn btn-outline-danger mx-1" asp-controller="VehicleModel" asp-action="Delete" asp-route-id="@Model.Id">
+                                    <i class="bi bi-trash2-fill"></i> Remove
                                 </a>
                             }
                         </div>
-                    
                     </div>
                 </div>
             </div>
         }
     </div>
 
+
     <div class="text-center mt-5">
         <a class="btn btn-dark" asp-controller="Home" asp-action="Index">Back to Home Page</a>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var startYearInput = document.getElementById('startYear');
+        var endYearInput = document.getElementById('endYear');
+
+        // Function to update min/max values
+        function updateYearConstraints() {
+            var startYear = parseInt(startYearInput.value);
+            var endYear = parseInt(endYearInput.value);
+
+            if (!isNaN(startYear)) {
+                endYearInput.min = startYear;
+            } else {
+                endYearInput.min = 1980; // Reset to default min
+            }
+
+            if (!isNaN(endYear)) {
+                startYearInput.max = endYear;
+            } else {
+                startYearInput.max = 2030; // Reset to default max
+            }
+        }
+
+        // Event listeners to trigger updates
+        startYearInput.addEventListener('input', updateYearConstraints);
+        endYearInput.addEventListener('input', updateYearConstraints);
+    });
+</script>

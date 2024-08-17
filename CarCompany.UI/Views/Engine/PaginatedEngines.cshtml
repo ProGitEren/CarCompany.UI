@@ -1,0 +1,214 @@
+﻿@using Infrastructure.Mappings
+@using Infrastucture.Helpers
+@using static Infrastructure.Models.Enums.VehicleEnums
+@model Pagination<EngineViewModel>
+
+@{
+    ViewData["Title"] = "Engines";
+    var SelectIdDictionary = Model.Data.ToDictionary(y => y.Id, y => y.EngineName);
+    var CylinderType = Enum.GetValues(typeof(Cylinder)).Cast<Cylinder>().ToDictionary(v => v, v => v.ToString());
+    var EngineCodeOptions = EngineMapper.EngineMapping;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="title-section text-light">Engines</h2>
+
+        <a asp-controller="Engine" asp-action="Create" class="btn btn-primary" style="background-color: cornflowerblue;color:white">
+            <i class="bi bi-plus-circle"></i> &nbsp; New Engine
+        </a>
+
+    </div>
+
+
+    <form method="get" asp-action="PaginatedEngines">
+        <div class="row mb-5">
+
+
+            <!-- Search Input -->
+            <div class="col-md-3">
+                <input type="search" name="searchInput" class="form-control bg-dark" placeholder="Search" />
+            </div>
+
+            <!-- Sorting Dropdown -->
+            <div class="col-md-2">
+                <select name="sortOptions" class="form-select bg-dark">
+                    <option value="">Sort by...</option>
+                    <option value="HpAsc">Hp: Low to High</option>
+                    <option value="HpDesc">Hp: High to Low</option>
+                    <option value="TorqueAsc">Torque: Low to High</option>
+                    <option value="TorqueDesc">Torque: High to Low</option>
+                    <option value="VolumeAsc">Volume: Low to High</option>
+                    <option value="VolumeDesc">Volume: High to Low</option>
+                    
+                </select>
+            </div>
+
+            <!-- Filtering Dropdowns -->
+            <div class="col-md-2">
+                <select name="filterEngineId" asp-items="@(new SelectList(SelectIdDictionary, "Key" , "Value"))" class="form-select bg-dark">
+                    <option value="">Engine ID...</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="enginecode" asp-items="@(new SelectList(EngineCodeOptions, "Key","Value"))" class="form-select bg-dark">
+                    <option value="">Engine Code...</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="cylinderoptions" asp-items="@(new SelectList(CylinderType,"Key","Value"))" class="form-select bg-dark">
+                    <option value="">Cylinder Type...</option>
+
+                </select>
+            </div>
+
+           
+
+            <!-- Submit Button -->
+            <div class="col-md-1">
+                <button type="submit" class="btn bg-dark">Apply</button>
+            </div>
+
+        </div>
+    </form>
+
+
+
+    <div class="row">
+        @foreach (var Engine in Model.Data)
+        {
+            <div class="col-md-4 mb-5">
+                <div class="card text-white bg-dark mb-3 border-5" style="max-width: 20rem;border-radius:40px;">
+                    <div class="card-header"> <h3 class="header-section text-center">@Engine.EngineCode</h3></div>
+                    <div class="card-body">
+                        <p class="card-text"><strong>Engine Name:</strong> @Engine.EngineName </p>
+                        <p class="card-text"><strong>Cylinder Type:</strong> @Engine.Cylinder.ToString()</p>
+                        <p class="card-text"><strong>HP:</strong> @Engine.Hp</p>
+                        <p class="card-text"><strong>Volume:</strong> @Engine.Volume</p>
+                        <p class="card-text"><strong>Torque:</strong> @Engine.Torque</p>
+                        <p class="card-text"><strong>Diameter (cm):</strong> @Engine.diameterCm</p>
+                        <p class="card-text"><strong>Compression Ratio (cm):</strong> @Engine.CompressionRatio : 1</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <div class="widht- -group d-flex justify-content-center align-items-center me-2" role="group">
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-outline-info me-2" asp-controller="Engine" asp-action="Update" asp-route-id="@Engine.Id">
+                                    <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
+                                </a>
+                                <a class="btn btn-outline-danger" asp-controller="Engine" asp-action="Delete" asp-route-id="@Engine.Id">
+                                    <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                                </a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <div class="d-flex justify-content-center mt-4">
+        @if(Model.TotalCount != 0)
+        {
+            <nav aria-label="Page navigation">
+                <ul class="pagination bg-dark">
+                    @if (Model.PageNumber != 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="PaginatedEngines" asp-route-PageNumber="@(Model.PageNumber - 1)"
+                               asp-route-PageSize="@(Model.PageSize)"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-engineCode="@ViewData["engineCode"]"
+                               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                               asp-route-cylinderoptions="@ViewData["cylinderoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]">Previous</a>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalCount / Model.PageSize + 1; i++)
+                    {
+                        <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                            <a class="page-link" asp-action="PaginatedEngines" asp-route-PageNumber="@i"
+                               asp-route-PageSize="@(Model.PageSize)"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-engineCode="@ViewData["engineCode"]"
+                               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                               asp-route-cylinderoptions="@ViewData["cylinderoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.PageNumber < Model.TotalCount / Model.PageSize + 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="PaginatedEngines" asp-route-PageNumber="@(Model.PageNumber + 1)"
+                               asp-route-PageSize="@(Model.PageSize)"
+                               asp-route-sortoptions="@ViewData["sortoptions"]"
+                               asp-route-engineCode="@ViewData["engineCode"]"
+                               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                               asp-route-cylinderoptions="@ViewData["cylinderoptions"]"
+                               asp-route-searchInput="@ViewData["searchInput"]">Next</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mt-2">
+    <span></span>
+    <ul class="pagination bg-dark ms-2">
+        <li class="page-item @(Model.PageSize == 5 ? "active" : "")">
+            <a class="page-link" asp-action="PaginatedEngines" asp-route-PageNumber="1"
+               asp-route-PageSize="5"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-engineCode="@ViewData["engineCode"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-cylinderoptions="@ViewData["cylinderoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]">1-5</a>
+        </li>
+        <li class="page-item @(Model.PageSize == 10 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedEngines" asp-route-PageNumber="1"
+               asp-route-PageSize="10"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-engineCode="@ViewData["engineCode"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-cylinderoptions="@ViewData["cylinderoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]">1-10</a>
+        </li>
+        <li class="page-item  @(Model.PageSize == 25 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedEngines" asp-route-PageNumber="1" 
+               asp-route-PageSize="25"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-engineCode="@ViewData["engineCode"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-cylinderoptions="@ViewData["cylinderoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]">1-25</a>
+        </li>
+
+    </ul>
+</div>  
+
+    <div class="text-center mt-5">
+        <a class="btn btn-outline-transparent" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+    </div>
+</div>
+
+@{
+}
+<style>
+
+    .pagination > li.active > a {
+        background-color: ghostwhite !important;
+        color: #7b8ab8 !important;
+    }
+
+</style>

@@ -13,6 +13,8 @@ using Infrastructure.Mappings;
 using Infrastructure.Map;
 using Infrastructure.Models.ViewModels.Engines;
 using Microsoft.VisualStudio.TextTemplating;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 
 namespace CarCompany.UI.Controllers
 {
@@ -51,6 +53,50 @@ namespace CarCompany.UI.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> PaginatedEngines(string? sortoptions,string? engineCode, int? filterEngineId,
+           string? cylinderoptions, string? searchInput, int PageNumber = 1, int PageSize = 10)
+        {
+
+            var param = new EngineParams
+            {
+                Search = searchInput,
+                Sorting = sortoptions,
+                Cylinder = cylinderoptions,
+                EngineCode = engineCode,
+                Id = filterEngineId,
+                PageNumber = PageNumber,
+                Pagesize = PageSize
+            };
+
+            // Preserve filter, sort, and pagination parameters in ViewData
+            ViewData["sortoptions"] = sortoptions;
+            ViewData["engineCode"] = engineCode;
+            ViewData["filterEngineId"] = filterEngineId;
+            ViewData["cylinderoptions"] = cylinderoptions;
+            ViewData["searchInput"] = searchInput;
+
+            try
+            {
+                var result = await _engineService.GetEnginesAsync(param);
+                if (result == null)
+                {
+                    ModelState.AddModelError("", "The Models could not be found.");
+                    _logger.Warning("Model retrieval failed: Model could not found");
+                }
+                _logger.Information("Model retrieval successful.");
+                var model = _mapper.Map<Pagination<EngineViewModel>>(result);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetEngines");
+            }
+
+            return RedirectToAction("EngineList", "Engine");
         }
 
         [HttpGet]

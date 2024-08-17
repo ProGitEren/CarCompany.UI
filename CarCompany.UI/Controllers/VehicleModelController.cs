@@ -10,6 +10,8 @@ using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using static Infrastructure.Models.Enums.VehicleEnums;
 using Infrastructure.Mappings;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 
 namespace CarCompany.UI.Controllers
 {
@@ -53,6 +55,51 @@ namespace CarCompany.UI.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> PaginatedModels(int? StartYear,int? EndYear, int? filterModelId,
+            string? sortoptions , string? searchInput ,string? vehicleType ,int PageNumber = 1, int PageSize = 10)
+        {
+            
+            var param = new VehiclemodelParams
+            {
+                Search = searchInput,
+                Sorting = sortoptions,
+                StartingModelYear = StartYear,
+                EndingModelYear = EndYear,
+                ModelId = filterModelId,
+                PageNumber = PageNumber,
+                Pagesize = PageSize,
+                VehicleType = vehicleType
+            };
+
+            // ViewDatas
+            ViewData["StartYear"] = StartYear;
+            ViewData["EndYear"] = EndYear;
+            ViewData["filterModelId"] = filterModelId;
+            ViewData["sortoptions"] = sortoptions;
+            ViewData["searchInput"] = searchInput;
+            ViewData["vehicleType"] = vehicleType;
+
+            try
+            {
+                var result = await _vehicleModelService.GetModelsAsync(param) ;
+                if (result == null)
+                {
+                    ModelState.AddModelError("", "The Models could not be found.");
+                    _logger.Warning("Model retrieval failed: Model could not found");
+                }
+                _logger.Information("Model retrieval successful.");
+                var model = _mapper.Map<Pagination<VehicleModelUserViewModel>>(result);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetModels");
+            }
+
+            return RedirectToAction("ModelList","VehicleModel");
+        }
+
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
@@ -73,7 +120,7 @@ namespace CarCompany.UI.Controllers
             try
             {
                 var vehicle = await _vehicleModelService.CreateAsync(model);
-                _logger.Information("The Model successfully deleted.");
+                _logger.Information("The Model successfully created.");
                 return RedirectToAction("ModelList", "VehicleModel");
             }
 
@@ -94,15 +141,16 @@ namespace CarCompany.UI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int? Id)
         {
-            var model = new VehicleModelViewModel();
+            var model = new UpdateVehicleModelViewModel();
             try
             {
-                model = await _vehicleModelService.GetModelAsync(Id);
+                model = _mapper.Map<UpdateVehicleModelViewModel>(await _vehicleModelService.GetModelAsync(Id));
                 if (model == null)
                 {
                     ModelState.AddModelError("", "The Model could not be found.");
                     _logger.Warning("Model retrieval failed.");
                 }
+                
                 _logger.Information("Model retrieval successful.");
             }
             catch (Exception ex)
@@ -114,13 +162,13 @@ namespace CarCompany.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(VehicleModelViewModel model)
+        public async Task<IActionResult> Update(UpdateVehicleModelViewModel model)
         {
 
             try
             {
-                model = await _vehicleModelService.UpdateVehicleModelAsync(model);
-                if (model == null)
+                var resultmodel = await _vehicleModelService.UpdateVehicleModelAsync(model);
+                if (resultmodel == null)
                 {
                     ModelState.AddModelError("", "The Model could not be found.");
                     _logger.Warning("Model update failed.");

@@ -10,6 +10,8 @@ using Infrastructure.Models.ViewModels.VehicleModels;
 using Infrastructure.Models.ViewModels.Vehicles;
 using Infrastucture.DTO.Dto_Engines;
 using Infrastucture.DTO.Dto_VehicleModels;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TextTemplating;
 using Newtonsoft.Json;
@@ -54,6 +56,52 @@ namespace Infrastructure.Services
 
             throw new UIException(response.StatusCode, "Failed.");
 
+        }
+
+        public async Task<Pagination<EngineDto>> GetEnginesAsync(EngineParams engineParams)
+        {
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+
+            var builder = new StringBuilder();
+            builder.Append($"?PageNumber={engineParams.PageNumber}");
+            builder.Append($"&Pagesize={engineParams.Pagesize}");
+
+            if (!string.IsNullOrEmpty(engineParams.Search))
+            {
+                builder.Append($"&Search={engineParams.Search}");
+            }
+
+            if (!string.IsNullOrEmpty(engineParams.Sorting))
+            {
+                builder.Append($"&Sorting={engineParams.Sorting}");
+            }
+            if (!string.IsNullOrEmpty(engineParams.EngineCode))
+            {
+                builder.Append($"&EngineCode={engineParams.EngineCode}");
+            }
+            if (!string.IsNullOrEmpty(engineParams.Cylinder))
+            {
+                builder.Append($"&Cylinder={engineParams.Cylinder}");
+            }
+
+            if (engineParams.Id.HasValue)
+                builder.Append($"&Id={engineParams.Id}");
+
+            var queryString = builder.ToString();
+            var response = await _httpClient.GetAsync($"api/Engine/get-engines{queryString}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Pagination<EngineDto>>(content);
+            }
+
+            await ErrorResultHelper.ErrorResult(response);
+
+            // This line will never be reached, but is required by the compiler
+            // because the method signature requires a UserDto return type
+
+            throw new UIException(response.StatusCode, "Failed.");
         }
 
         public async Task<EngineViewModel> CreateAsync(RegisterEngineViewModel model)
