@@ -10,6 +10,8 @@ namespace Infrastructure.Models.ViewModels.Users
 
         public string Email { get; set; }
 
+        public string Phone { get; set; }
+
         public AddressViewModel Address { get; set; }
 
         public ICollection<VehicleViewModel> Vehicles { get; set; }

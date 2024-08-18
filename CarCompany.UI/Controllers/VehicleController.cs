@@ -78,7 +78,7 @@ namespace CarCompany.UI.Controllers
             try
             {
                 var vehicle = await _vehicleService.CreateAsync(model);
-                return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+                return User.IsInRole("Admin") ? RedirectToAction("PaginatedVehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
             }
 
             catch (Exception ex)
@@ -137,7 +137,7 @@ namespace CarCompany.UI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PaginatedVehicles(string? role,string? filterUserId, int? filterModelId,int? filterEngineId, string? filterVehicleId,
+        public async Task<IActionResult> PaginatedVehicles(string? role,string? filterUserId, int? filterModelId,int? filterEngineId, string? filterVehicleId,string? userName,
            string? sortoptions, string? searchInput, int PageNumber = 1, int PageSize = 10)
         {
 
@@ -152,6 +152,7 @@ namespace CarCompany.UI.Controllers
                 Pagesize = PageSize,
                 Role = role,
                 UserId = filterUserId,
+                UserName = userName
             };
 
             // ViewDatas
@@ -161,6 +162,7 @@ namespace CarCompany.UI.Controllers
             ViewData["filterModelId"] = filterModelId;
             ViewData["sortoptions"] = sortoptions;
             ViewData["searchInput"] = searchInput;
+            ViewData["userName"] = userName;
 
             try
             {
@@ -176,10 +178,10 @@ namespace CarCompany.UI.Controllers
             }
             catch (Exception ex)
             {
-                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetModels");
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetVehicles");
             }
 
-            return RedirectToAction("ModelList", "VehicleModel");
+            return RedirectToAction("Vehicles", "Vehicle");
         }
 
 
@@ -220,7 +222,7 @@ namespace CarCompany.UI.Controllers
                     _logger.Warning("Vehicle update failed.");
                 }
                 _logger.Information("Vehicle update successful.");
-                return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+                return User.IsInRole("Admin") ? RedirectToAction("PaginatedVehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
             }
             catch (Exception ex)
             {
@@ -266,14 +268,14 @@ namespace CarCompany.UI.Controllers
                 }
                 TempData["success"] = "The vehicle successfully deleted.";
                 _logger.Information("Vehicle delete successful.");
-                return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+                return User.IsInRole("Admin") ? RedirectToAction("PaginatedVehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
             }
             catch (Exception ex)
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
             }
 
-            return User.IsInRole("Admin") ? RedirectToAction("Vehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
+            return User.IsInRole("Admin") ? RedirectToAction("PaginatedVehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
         }
 
 

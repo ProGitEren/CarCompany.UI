@@ -23,15 +23,16 @@
 
     <form method="get" asp-action="PaginatedEngines">
         <div class="row mb-5">
+            <input hidden asp-for="PageSize" />
 
 
             <!-- Search Input -->
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <input type="search" name="searchInput" class="form-control bg-dark" placeholder="Search" />
             </div>
 
             <!-- Sorting Dropdown -->
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <select name="sortOptions" class="form-select bg-dark">
                     <option value="">Sort by...</option>
                     <option value="HpAsc">Hp: Low to High</option>
@@ -44,26 +45,30 @@
                 </select>
             </div>
 
-            <!-- Filtering Dropdowns -->
-            <div class="col-md-2">
-                <select name="filterEngineId" asp-items="@(new SelectList(SelectIdDictionary, "Key" , "Value"))" class="form-select bg-dark">
-                    <option value="">Engine ID...</option>
-
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <select name="enginecode" asp-items="@(new SelectList(EngineCodeOptions, "Key","Value"))" class="form-select bg-dark">
-                    <option value="">Engine Code...</option>
-
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <select name="cylinderoptions" asp-items="@(new SelectList(CylinderType,"Key","Value"))" class="form-select bg-dark">
-                    <option value="">Cylinder Type...</option>
-
-                </select>
+            <!-- Filtering Dropdown Menu -->
+            <div class="col-md-4">
+                <div class="dropdown">
+                    <button class="btn bg-dark dropdown-toggle w-100" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 40px;">
+                        <i class="bi bi-filter-left"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
+                        <li>
+                            <select name="filterEngineId" asp-items="@(new SelectList(SelectIdDictionary, "Key", "Value"))" class="form-select bg-dark" style="border-radius: 40px;">
+                                <option value="">Engine ID...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="enginecode" asp-items="@(new SelectList(EngineCodeOptions, "Key", "Value"))" class="form-select bg-dark" style="border-radius: 40px;">
+                                <option value="">Engine Code...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="cylinderoptions" asp-items="@(new SelectList(CylinderType, "Key", "Value"))" class="form-select bg-dark" style="border-radius: 40px;">
+                                <option value="">Cylinder Type...</option>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
            
@@ -83,7 +88,7 @@
         {
             <div class="col-md-4 mb-5">
                 <div class="card text-white bg-dark mb-3 border-5" style="max-width: 20rem;border-radius:40px;">
-                    <div class="card-header"> <h3 class="header-section text-center">@Engine.EngineCode</h3></div>
+                    <div class="card-header bg-secondary text-primary"> <h3 class="header-section text-center">@Engine.EngineCode</h3></div>
                     <div class="card-body">
                         <p class="card-text"><strong>Engine Name:</strong> @Engine.EngineName </p>
                         <p class="card-text"><strong>Cylinder Type:</strong> @Engine.Cylinder.ToString()</p>
@@ -209,6 +214,44 @@
     .pagination > li.active > a {
         background-color: ghostwhite !important;
         color: #7b8ab8 !important;
+    }
+
+    .dropdown-menu {
+        background-color: transparent;
+    }
+
+    .dropdown-item {
+        color: #fff;
+    }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: #495057;
+        }
+
+    .form-select,
+    .form-control,
+    .btn {
+        border-radius: 40px; /* Match this to the border-radius of your buttons */
+    }
+
+    /* Ensure all inputs, selects, and buttons have the same border-radius */
+    .form-control {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .form-select {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .btn {
+        border-radius: 40px; /* Customize as needed */
+        
+    }
+
+    /* Optionally adjust padding or height to better align with buttons */
+    .form-control, .form-select, .btn {
+        padding: 10px 20px; /* Adjust to align with buttons */
+        height: auto; /* Ensure height matches button height */
     }
 
 </style>

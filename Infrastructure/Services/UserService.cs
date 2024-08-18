@@ -17,6 +17,9 @@ using Infrastructure.DTO.Dto_Addresses;
 using Infrastructure.Models.ViewModels.Users;
 using Infrastructure.Models.ViewModels.Addresses;
 using Infrastructure.Helpers;
+using Infrastucture.DTO.Dto_Engines;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 
 namespace Infrastructure.Services
 {
@@ -136,6 +139,63 @@ namespace Infrastructure.Services
             // because the method signature requires a UserDto return type
 
             throw new UIException(response.StatusCode, "Login failed.");
+        }
+
+        public async Task<Pagination<UserwithdetailDto>> GetUsersAsync(UserParams userParams)
+        {
+            AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
+
+            var builder = new StringBuilder();
+            builder.Append($"?PageNumber={userParams.PageNumber}");
+            builder.Append($"&Pagesize={userParams.Pagesize}");
+
+            var properties = typeof(UserParams).GetProperties();
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(userParams);
+                if (value != null)
+                {
+                    var name = property.Name;
+                    var stringValue = value.ToString();
+
+                    if (!string.IsNullOrEmpty(stringValue))
+                    {
+                        if (name == nameof(userParams.PageNumber) || name == nameof(userParams.Pagesize) || name == nameof(userParams.maxpagesize))
+                            continue; // Skip these as they are already appended at the start.
+
+                        // Check if the property type is nullable (like int?) or a simple string
+                        if (property.PropertyType == typeof(int?) && (int?)value != null)
+                        {
+                            builder.Append($"&{name}={value}");
+                        }
+                        else if (property.PropertyType == typeof(string) && !string.IsNullOrEmpty(stringValue))
+                        {
+                            builder.Append($"&{name}={value}");
+                        }
+                        else if (property.PropertyType == typeof(Guid?) && !string.IsNullOrEmpty(stringValue))
+                        {
+                            builder.Append($"&{name}={value}");
+                        }
+                    }
+                }
+            }
+
+            var queryString = builder.ToString();
+            var response = await _httpClient.GetAsync($"api/User/get-users{queryString}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Pagination<UserwithdetailDto>>(content);
+            }
+
+            await ErrorResultHelper.ErrorResult(response);
+
+            // This line will never be reached, but is required by the compiler
+            // because the method signature requires a UserDto return type
+
+            throw new UIException(response.StatusCode, "Failed.");
         }
 
         public async Task<UserViewModel> ProfileAsync()

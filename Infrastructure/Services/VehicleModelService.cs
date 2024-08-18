@@ -57,57 +57,41 @@ namespace Infrastructure.Services
         }
 
         public async Task<Pagination<VehicleModelDto>> GetModelsAsync(VehiclemodelParams modelParams) 
-        {
+            {
             AuthorizationHelper.AddAuthorizationHeader(_httpContextAccessor, _httpClient); // Since authorized user does this action we need this
 
             var builder = new StringBuilder();
             builder.Append($"?PageNumber={modelParams.PageNumber}");
             builder.Append($"&Pagesize={modelParams.Pagesize}");
 
-            if (!string.IsNullOrEmpty(modelParams.Search))
+            var properties = typeof(VehiclemodelParams).GetProperties();
+
+            foreach (var property in properties)
             {
-                builder.Append($"&Search={modelParams.Search}");
+                var value = property.GetValue(modelParams);
+                if (value != null)
+                {
+                    var name = property.Name;
+                    var stringValue = value.ToString();
+
+                    if (!string.IsNullOrEmpty(stringValue))
+                    {
+                        if (name == nameof(modelParams.PageNumber) || name == nameof(modelParams.Pagesize) || name == nameof(modelParams.maxpagesize))
+                            continue; // Skip these as they are already appended at the start.
+
+                        // Check if the property type is nullable (like int?) or a simple string
+                        if (property.PropertyType == typeof(int?) && (int?)value != null)
+                        {
+                            builder.Append($"&{name}={value}");
+                        }
+                        else if (property.PropertyType == typeof(string) && !string.IsNullOrEmpty(stringValue))
+                        {
+                            builder.Append($"&{name}={value}");
+                        }
+                    }
+                }
             }
 
-            if (!string.IsNullOrEmpty(modelParams.Sorting))
-            {
-                builder.Append($"&Sorting={modelParams.Sorting}");
-            }
-            if (!string.IsNullOrEmpty(modelParams.VehicleType))
-            {
-                builder.Append($"&VehicleType={modelParams.VehicleType}");
-            }
-
-            if (modelParams.ModelId.HasValue)
-            builder.Append($"&ModelId={modelParams.ModelId.Value}");
-            if (modelParams.StartingModelYear.HasValue)
-            builder.Append($"&StartingModelYear={modelParams.StartingModelYear.Value}");
-            if (modelParams.EndingModelYear.HasValue)
-                builder.Append($"&EndingModelYear={modelParams.EndingModelYear.Value}");
-
-            //if (!string.IsNullOrEmpty(modelParams.Sorting))
-            //{
-            //    builder.Append($"&Sorting={modelParams.Sorting}");
-            //}
-
-            //if (modelParams.ModelId.HasValue)
-            //{
-            //    builder.Append($"&ModelId={modelParams.ModelId.Value}");
-            //}
-            //else
-            //{
-            //    builder.Append($"&ModelId=null");
-            //}
-
-            //if (modelParams.ModelYear.HasValue)
-            //{
-            //    builder.Append($"&ModelYear={modelParams.ModelYear.Value}");
-            //}
-            //else
-            //{
-            //    builder.Append($"&ModelYear=null");
-            //}
-            
             var queryString = builder.ToString();
             var response = await _httpClient.GetAsync($"api/VehicleModel/get-models{queryString}");
 

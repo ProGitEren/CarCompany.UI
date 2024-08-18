@@ -66,26 +66,33 @@ namespace Infrastructure.Services
             builder.Append($"?PageNumber={engineParams.PageNumber}");
             builder.Append($"&Pagesize={engineParams.Pagesize}");
 
-            if (!string.IsNullOrEmpty(engineParams.Search))
-            {
-                builder.Append($"&Search={engineParams.Search}");
-            }
+            var properties = typeof(EngineParams).GetProperties();
 
-            if (!string.IsNullOrEmpty(engineParams.Sorting))
+            foreach (var property in properties)
             {
-                builder.Append($"&Sorting={engineParams.Sorting}");
-            }
-            if (!string.IsNullOrEmpty(engineParams.EngineCode))
-            {
-                builder.Append($"&EngineCode={engineParams.EngineCode}");
-            }
-            if (!string.IsNullOrEmpty(engineParams.Cylinder))
-            {
-                builder.Append($"&Cylinder={engineParams.Cylinder}");
-            }
+                var value = property.GetValue(engineParams);
+                if (value != null)
+                {
+                    var name = property.Name;
+                    var stringValue = value.ToString();
 
-            if (engineParams.Id.HasValue)
-                builder.Append($"&Id={engineParams.Id}");
+                    if (!string.IsNullOrEmpty(stringValue))
+                    {
+                        if (name == nameof(engineParams.PageNumber) || name == nameof(engineParams.Pagesize) || name == nameof(engineParams.maxpagesize))
+                            continue; // Skip these as they are already appended at the start.
+
+                        // Check if the property type is nullable (like int?) or a simple string
+                        if (property.PropertyType == typeof(int?) && (int?)value != null)
+                        {
+                            builder.Append($"&{name}={value}");
+                        }
+                        else if (property.PropertyType == typeof(string) && !string.IsNullOrEmpty(stringValue))
+                        {
+                            builder.Append($"&{name}={value}");
+                        }
+                    }
+                }
+            }
 
             var queryString = builder.ToString();
             var response = await _httpClient.GetAsync($"api/Engine/get-engines{queryString}");

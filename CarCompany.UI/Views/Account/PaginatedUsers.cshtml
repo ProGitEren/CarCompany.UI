@@ -1,0 +1,302 @@
+﻿@using Infrastucture.Helpers
+@model Pagination<UserViewModel>
+
+
+@{
+    ViewData["Title"] = "Users";
+    var users = Model.Data;
+    var SelectVehicleIdList = users.SelectMany(y => y.Vehicles).Select(y=>y.Vin);
+    var SelectAddressIdDict = users.Select(y => y.Address).ToDictionary(y => y.AddressId, y => y.name);
+    var PhoneDict = users.Select(y => y.Phone);
+    var EmailDict = users.Select(y => y.Email);
+}
+
+<br>
+<br>
+
+<div style="display: flex; align-items: center; justify-content: space-between; margin: 10px; position: relative;">
+    <h2 class="title-section" style="margin: 0 auto;">Users</h2>
+    <a asp-controller="Account" asp-action="RegisterAdmin" class="btn btn-primary text-dark" style="position: absolute; right: 0;background-color:cornflowerblue;">
+        <i class="bi bi-person-plus"></i> &nbsp; New User
+    </a>
+</div>
+<hr />
+
+<form method="get" asp-action="PaginatedUsers">
+    <div class="row mb-5">
+        <input hidden asp-for="PageSize" />
+
+        <!-- Search Input -->
+        <div class="col-md-4">
+            <input type="search" name="searchInput" class="form-control bg-dark" placeholder="Search" />
+        </div>
+
+        <!-- Sorting Dropdown -->
+        <div class="col-md-3">
+            <select name="sortOptions" class="form-select bg-dark">
+                <option value="">Sort by...</option>
+                <option value="PhoneAsc">Phone: First to Last</option>
+                <option value="PhoneDesc">Phone: Last to First</option>
+                <option value="VehicleCountAsc">Vehicle Count: Low to High</option>
+                <option value="VehicleCountDesc">Vehicle Count: High to Low</option>
+                <option value="EmailAsc">Email: First to Last</option>
+                <option value="EmailDesc">Email: Last to First</option>
+            </select>
+        </div>
+
+        <!-- Filter Dropdown Menu -->
+        <div class="col-md-4">
+            <div class="dropdown">
+                <button class="btn bg-dark dropdown-toggle w-100" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-filter-left"></i> Filter
+                </button>
+                <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
+                    <li>
+                        <select name="filterVehicleId" asp-items="@(new SelectList(SelectVehicleIdList))" class="form-select bg-dark">
+                            <option value="">Vehicle ID...</option>
+                        </select>
+                    </li>
+                    <li>
+                        <select name="filterAddressId" asp-items="@(new SelectList(SelectAddressIdDict, "Key","Value"))" class="form-select bg-dark">
+                            <option value="">Address ID...</option>
+                        </select>
+                    </li>
+                    <li>
+                        <select name="email" asp-items="@(new SelectList(EmailDict))" class="form-select bg-dark">
+                            <option value="">Email</option>
+                        </select>
+                    </li>
+                    <li>
+                        <select name="phone" asp-items="@(new SelectList(PhoneDict))" class="form-select bg-dark">
+                            <option value="">Phone</option>
+                        </select>
+                    </li>
+                    
+                    <li>
+                        <select name="role" class="form-select bg-dark">
+                            <option value="">Role Name...</option>
+                            <option value="Buyer">Buyer</option>
+                            <option value="Seller">Seller</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+        <!-- Submit Button -->
+        <div class="col-md-1">
+            <button type="submit" class="btn bg-dark">Apply</button>
+        </div>
+
+    </div>
+</form>
+
+
+
+<div style="max-height:700px;overflow:scroll;">
+    <table class="table table- table-hover table-bordered table-striped table-transparent">
+        <thead class="thead-info">
+            <tr class="table-info">
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Email</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">First Name</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Last Name</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Phone</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Roles</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Address</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;">Vehicles</th>
+                <th class="text-dark text-center align-middle" style="border-right:inherit !important;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr class="table-info">
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.Email</td>
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.FirstName</td>
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.LastName</td>
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">@user.Phone</td>
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">
+                        @foreach (var role in user.roles)
+                        {
+                            @role
+                            <br />
+                        }
+                    </td>
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">
+                        <div class=" d-flex justify-content-center align-items-center" role="group">
+                            <a class="btn btn-secondary btn-outline-info" asp-controller="Account" asp-action="AddressDetail" asp-route-email="@user.Email">
+                                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Address
+                            </a>
+                            <a class="btn btn-outline-dark ms-2" asp-controller="Account" asp-action="UpdateAddress" asp-route-id="@user.Address.AddressId">
+                                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Edit
+                            </a>
+                            <a class="btn btn-outline-danger ms-2" asp-controller="Account" asp-action="DeleteUser" asp-route-email="@user.Email">
+                                <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                            </a>
+                        </div>
+                    </td>
+                    <td class="border-left text-body text-center align-middle" style="border-right:inherit !important;">
+                        <div class=" d-flex justify-content-center align-items-center" role="group">
+                            <a class="btn btn-primary" asp-controller="Vehicle" asp-action="VehicleDetail" asp-route-email="@user.Email" style="background-color:transparent;">
+                                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Vehicles
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<div class="d-flex justify-content-center mt-4">
+    @if (Model.TotalCount != 0)
+    {
+        <nav aria-label="Page navigation">
+            <ul class="pagination bg-dark">
+                @if (Model.PageNumber != 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="@(Model.PageNumber - 1)"
+                           asp-route-PageSize="@(Model.PageSize)"
+                           asp-route-sortoptions="@ViewData["sortoptions"]"
+                           asp-route-searchInput="@ViewData["searchInput"]"
+                           asp-route-Role="@ViewData["role"]"
+                           asp-route-filterUserId="@ViewData["filterUserId"]"
+                           asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                           asp-route-filterModelId="@ViewData["filterModelId"]"
+                           asp-route-useName="@ViewData["userName"]">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.TotalCount / Model.PageSize + 1; i++)
+                {
+                    <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                        <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="@i"
+                           asp-route-PageSize="@(Model.PageSize)"
+                           asp-route-sortoptions="@ViewData["sortoptions"]"
+                           asp-route-searchInput="@ViewData["searchInput"]"
+                           asp-route-Role="@ViewData["role"]"
+                           asp-route-filterUserId="@ViewData["filterUserId"]"
+                           asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                           asp-route-filterModelId="@ViewData["filterModelId"]"
+                           asp-route-useName="@ViewData["userName"]">@i</a>
+                    </li>
+                }
+
+                @if (Model.PageNumber < Model.TotalCount / Model.PageSize + 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="@(Model.PageNumber + 1)"
+                           asp-route-PageSize="@(Model.PageSize)"
+                           asp-route-sortoptions="@ViewData["sortoptions"]"
+                           asp-route-searchInput="@ViewData["searchInput"]"
+                           asp-route-Role="@ViewData["role"]"
+                           asp-route-filterUserId="@ViewData["filterUserId"]"
+                           asp-route-filterEngineId="@ViewData["filterEngineId"]"
+                           asp-route-filterModelId="@ViewData["filterModelId"]"
+                           asp-route-useName="@ViewData["userName"]">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+</div>
+
+<div class="d-flex justify-content-center mt-2">
+    <span></span>
+    <ul class="pagination bg-dark ms-2">
+        <li class="page-item @(Model.PageSize == 5 ? "active" : "")">
+            <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="1"
+               asp-route-PageSize="5"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-Role="@ViewData["role"]"
+               asp-route-filterUserId="@ViewData["filterUserId"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-useName="@ViewData["userName"]">1-5</a>
+        </li>
+        <li class="page-item @(Model.PageSize == 10 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="1"
+               asp-route-PageSize="10"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-Role="@ViewData["role"]"
+               asp-route-filterUserId="@ViewData["filterUserId"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-useName="@ViewData["userName"]">1-10</a>
+        </li>
+        <li class="page-item  @(Model.PageSize == 25 ? "active " : "")">
+            <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="1"
+               asp-route-PageSize="25"
+               asp-route-sortoptions="@ViewData["sortoptions"]"
+               asp-route-searchInput="@ViewData["searchInput"]"
+               asp-route-Role="@ViewData["role"]"
+               asp-route-filterUserId="@ViewData["filterUserId"]"
+               asp-route-filterEngineId="@ViewData["filterEngineId"]"
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-useName="@ViewData["userName"]">1-25</a>
+        </li>
+
+    </ul>
+</div>
+
+
+<div class="container">
+    <a class="btn btn-secondary mt-4" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+</div>
+
+
+
+<style>
+
+    .pagination > li.active > a {
+        background-color: ghostwhite !important;
+        color: #7b8ab8 !important;
+    }
+
+    .dropdown-menu {
+        background-color: transparent;
+    }
+
+    .dropdown-item {
+        color: #fff;
+    }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: #495057;
+        }
+
+    .form-select,
+    .form-control,
+    .btn {
+        border-radius: 40px; /* Match this to the border-radius of your buttons */
+    }
+
+    /* Ensure all inputs, selects, and buttons have the same border-radius */
+    .form-control {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .form-select {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .btn {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    /* Optionally adjust padding or height to better align with buttons */
+    .form-control, .form-select, .btn {
+        padding: 10px 20px; /* Adjust to align with buttons */
+        height: auto; /* Ensure height matches button height */
+    }
+
+</style>

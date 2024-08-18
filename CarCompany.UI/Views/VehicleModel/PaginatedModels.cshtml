@@ -22,15 +22,16 @@
 
     <form method="get" asp-action="PaginatedModels">
         <div class="row mb-5">
+            <input hidden asp-for="PageSize" />
 
 
             <!-- Search Input -->
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <input type="search" name="searchInput" class="form-control bg-dark" placeholder="Search" />
             </div>
 
             <!-- Sorting Dropdown -->
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <select name="sortOptions" class="form-select bg-dark">
                     <option value="">Sort by...</option>
                     <option value="PriceAsc">Price: Low to High</option>
@@ -42,40 +43,45 @@
                 </select>
             </div>
 
-            <!-- Filtering Dropdowns -->
-            <div class="col-md-2">
-                <select name="filterModelId" asp-items="@(new SelectList(SelectIdDictionary, "Key" , "Value"))" class="form-select bg-dark">
-                    <option value="">Model Id...</option>
-
-                </select>
+            <!-- Filtering Dropdown Menu -->
+            <div class="col-md-4">
+                <div class="dropdown">
+                    <button class="btn bg-dark dropdown-toggle w-100" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-filter-left"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
+                        <li>
+                            <select name="filterModelId" asp-items="@(new SelectList(SelectIdDictionary, "Key", "Value"))" class="form-select bg-dark" style="border-radius: 20px;">
+                                <option value="">Model ID...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="vehicleType" asp-items="@(new SelectList(VehicleTypeOptions, "Key", "Value"))" class="form-select bg-dark" style="border-radius: 20px;">
+                                <option value="">Vehicle Type...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select id="startYear" name="StartYear" class="form-select bg-dark" style="border-radius: 20px;">
+                                <option value="">Start Year...</option>
+                                @for (int year = 1980; year <= 2030; year++)
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                        </li>
+                        <li>
+                            <select id="endYear" name="EndYear" class="form-select bg-dark" style="border-radius: 20px;">
+                                <option value="">End Year...</option>
+                                @for (int year = 1980; year <= 2030; year++)
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="col-md-2">
-                <select name="vehicleType" asp-items="@(new SelectList(VehicleTypeOptions, "Key" , "Value"))" class="form-select bg-dark">
-                    <option value="">Vehicle Type...</option>
-
-                </select>
-            </div>
-
-            <div class="col-md-1">
-                <select id="startYear" name="StartYear" class="form-select bg-dark" style="overflow-y: scroll;">
-                    <option value="">Start Year...</option>
-                    @for (int year = 1980; year <= 2030; year++)
-                    {
-                        <option value="@year">@year</option>
-                    }
-                </select>
-            </div>
-
-            <div class="col-md-1">
-                <select id="endYear" name="EndYear" class="form-select bg-dark" style="overflow-y: scroll;">
-                    <option value="">End Year...</option>
-                    @for (int year = 1980; year <= 2030; year++)
-                    {
-                        <option value="@year">@year</option>
-                    }
-                </select>
-            </div>
 
             <!-- Submit Button -->
             <div class="col-md-1">
@@ -90,7 +96,7 @@
         {
             <div class="col-md-6 mb-4">
                 <div class="card text-white bg-dark border-5" style="border-radius: 40px;">
-                    <div class="card-header">
+                    <div class="card-header bg-secondary text-primary">
                         <h3 class="header-section text-center">@Model.ModelShortName</h3>
                     </div>
                     <div class="card-body text-center">
@@ -306,6 +312,43 @@
     {
         background-color:ghostwhite !important;
         color: #7b8ab8 !important;
+    }
+
+    .dropdown-menu {
+        background-color: transparent;
+    }
+
+    .dropdown-item {
+        color: #fff;
+    }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: #495057;
+        }
+
+    .form-select,
+    .form-control,
+    .btn {
+        border-radius: 40px; /* Match this to the border-radius of your buttons */
+    }
+
+    /* Ensure all inputs, selects, and buttons have the same border-radius */
+    .form-control {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .form-select {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .btn {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    /* Optionally adjust padding or height to better align with buttons */
+    .form-control, .form-select, .btn {
+        padding: 10px 20px; /* Adjust to align with buttons */
+        height: auto; /* Ensure height matches button height */
     }
 
 </style>

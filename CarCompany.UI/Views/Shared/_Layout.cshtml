@@ -47,7 +47,7 @@
                                 <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="Profile">Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="UsersList">Users</a>
+                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="PaginatedUsers">Users</a>
                             </li>
                             @if (User.IsInRole("Seller") || User.IsInRole("Buyer"))
                             {

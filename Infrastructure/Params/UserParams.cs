@@ -24,6 +24,8 @@ namespace Infrastucture.Params
         public string? Phone { get; set; }
         public string? VehicleId { get; set; }
 
+        public string? Role { get; set; }
+
         public Guid? AddressId { get; set; }
 
 

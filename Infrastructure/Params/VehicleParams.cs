@@ -25,6 +25,8 @@ namespace Infrastucture.Params
         public int? EngineId { get; set; }
         public string? UserId { get; set; }
         public string? Role { get; set; }
+
+        public string? UserName { get; set; }
         
         //Sorting
         public string? Sorting { get; set; }

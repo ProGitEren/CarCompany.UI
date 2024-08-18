@@ -11,6 +11,7 @@ namespace Infrastructure.DTO.Dto_Users
         public string Email { get; set; }
 
         public string LastName { get; set; }
+        public string Phone { get; set; }
 
         public AddressDto AddressDto { get; set; }
 

@@ -12,8 +12,8 @@
     @foreach (var vehicle in Model)
     {
         <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-header">
+            <div class="card text-white bg-dark border-5">
+                <div class="card-header bg-secondary text-primary">
                     VIN: @vehicle.Vin
                 </div>
                 <div class="card-body">
@@ -41,6 +41,6 @@
 </div>
 
 <div class="text-center mt-4">
-    <a class="btn btn-secondary" asp-controller="Account" asp-action="UsersList">Back to List</a>
+    <a class="btn btn-secondary" asp-controller="Account" asp-action="PaginatedUsers">Back to List</a>
 </div>
 </div>

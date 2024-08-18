@@ -4,8 +4,11 @@ using Infrastructure.Exceptions;
 using Infrastructure.Helpers;
 using Infrastructure.Models;
 using Infrastructure.Models.ViewModels.Addresses;
+using Infrastructure.Models.ViewModels.Engines;
 using Infrastructure.Models.ViewModels.Users;
 using Infrastructure.Services;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -188,6 +191,57 @@ namespace CarCompany.UI.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PaginatedUsers(string? sortoptions, string? email,string? phone ,string? filterVehicleId,string? role,
+                   Guid? filterAddressId, string? searchInput, int PageNumber = 1, int PageSize = 10)
+        {
+
+            var param = new UserParams
+            {
+                Search = searchInput,
+                Sorting = sortoptions,
+                Phone = phone,
+                Email = email,
+                VehicleId = filterVehicleId,
+                PageNumber = PageNumber,
+                Pagesize = PageSize,
+                AddressId = filterAddressId,
+                Role = role,
+            };
+
+            // Preserve filter, sort, and pagination parameters in ViewData
+            ViewData["sortoptions"] = sortoptions;
+            ViewData["filterVehicleId"] = filterVehicleId;
+            ViewData["filterAddressId"] = filterAddressId;
+            ViewData["searchInput"] = searchInput;
+            ViewData["phone"] = phone;
+            ViewData["email"] = email;
+            ViewData["role"] = role;
+
+
+            try
+            {
+                var result = await _userService.GetUsersAsync(param);
+                if (result == null)
+                {
+                    ModelState.AddModelError("", "The Users could not be found.");
+                    _logger.Warning("User retrieval failed: Model could not found");
+                }
+                _logger.Information("User retrieval successful.");
+                var model = _mapper.Map<Pagination<UserViewModel>>(result);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetUsers");
+            }
+
+            return RedirectToAction("UsersList", "Account");
+        }
+
+
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Profile()
@@ -282,7 +336,7 @@ namespace CarCompany.UI.Controllers
             {
                 var address = await _userService.UpdateAddressAsync(model);
                 _logger.Information("Address detail updated");
-                return User.IsInRole("Admin") ? RedirectToAction("UsersList", "Account") : RedirectToAction("Profile", "Account");
+                return User.IsInRole("Admin") ? RedirectToAction("PaginatedUsers", "Account") : RedirectToAction("Profile", "Account");
             }
             catch (Exception ex)
             {
@@ -376,14 +430,14 @@ namespace CarCompany.UI.Controllers
             {
                 var resultstring = await _userService.DeleteUserAsync(email);
                 _logger.Information("User deleted");
-                return RedirectToAction("UsersList", "Account");
+                return RedirectToAction("PaginatedUsers", "Account");
             }
             catch (Exception ex)
             {
                 ExceptionHelper.HandleException(ex, email, _logger, ModelState, "DeleteUserPost");
             }
 
-            return RedirectToAction("UsersList", "Account");
+            return RedirectToAction("PaginatedUsers", "Account");
         }
 
         [HttpGet]

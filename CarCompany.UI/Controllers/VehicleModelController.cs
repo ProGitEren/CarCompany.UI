@@ -121,7 +121,7 @@ namespace CarCompany.UI.Controllers
             {
                 var vehicle = await _vehicleModelService.CreateAsync(model);
                 _logger.Information("The Model successfully created.");
-                return RedirectToAction("ModelList", "VehicleModel");
+                return RedirectToAction("PaginatedModels", "VehicleModel");
             }
 
             catch (Exception ex)
@@ -174,7 +174,7 @@ namespace CarCompany.UI.Controllers
                     _logger.Warning("Model update failed.");
                 }
                 _logger.Information("Model update successful.");
-                return RedirectToAction("ModelList", "VehicleModel");
+                return RedirectToAction("PaginatedModels", "VehicleModel");
             }
             catch (Exception ex)
             {
@@ -228,7 +228,7 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteModel");
             }
 
-            return RedirectToAction("ModelList", "VehicleModel");
+            return RedirectToAction("PaginatedModels", "VehicleModel");
         }
 
 

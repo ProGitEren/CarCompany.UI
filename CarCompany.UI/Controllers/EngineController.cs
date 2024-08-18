@@ -121,7 +121,7 @@ namespace CarCompany.UI.Controllers
             {
                 var vehicle = await _engineService.CreateAsync(model);
                 _logger.Information("The Engine successfully deleted.");
-                return RedirectToAction("EngineList", "Engine");
+                return RedirectToAction("PaginatedEngines", "Engine");
             }
 
             catch (Exception ex)
@@ -173,7 +173,7 @@ namespace CarCompany.UI.Controllers
                     _logger.Warning("Engine update failed.");
                 }
                 _logger.Information("Engine update successful.");
-                return RedirectToAction("EngineList", "Engine");
+                return RedirectToAction("PaginatedEngines", "Engine");
             }
             catch (Exception ex)
             {
@@ -230,7 +230,7 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteEngine");
             }
 
-            return RedirectToAction("EngineList", "Engine");
+            return RedirectToAction("PaginatedEngines", "Engine");
         }
 
 

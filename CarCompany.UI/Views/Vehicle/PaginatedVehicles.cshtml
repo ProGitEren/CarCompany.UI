@@ -6,15 +6,16 @@
     ViewData["Title"] = "Vehicles";
     var uniquemodels = Model.Data.Distinct(new VehicleModelIdComparer());
     var uniqueengines = Model.Data.Distinct(new VehicleEngineIdComparer());
-    
-    var companyVehicles = Model.Data.Where(x => x.UserId == null).OrderBy(y => y.ModelId).ThenBy(o=>o.Vin).ToList();
-    var userVehicles = Model.Data.Except(companyVehicles).OrderBy(y => y.ModelId).ThenBy(o => o.Vin).ToList();
+
+    var companyVehicles = Model.Data.Where(x => x.UserId == null).ToList();
+    var userVehicles = Model.Data.Except(companyVehicles).ToList();
 
     var uniqueusers = userVehicles.Distinct(new VehicleUserIdComparer());
 
     var SelectModelIdDict = uniquemodels.ToDictionary(z => z.ModelId, z => z.ModelName);
     var SelectEngineIdDict = uniqueengines.ToDictionary(z => z.EngineId, z => z.EngineName);
     var SelectVehicleIdList = Model.Data.Select(z => z.Vin);
+    var SelectUserNameList = Model.Data.Select(x => x.UserName);
 }
 
 <br>
@@ -33,16 +34,16 @@
 
     <form method="get" asp-action="PaginatedVehicles">
         <div class="row mb-5">
-
+            <input hidden asp-for="PageSize" />
 
             <!-- Search Input -->
-            <div class="col-md-3">
-                <input type="search" name="searchInput" class="form-control bg-info" placeholder="Search" />
+            <div class="col-md-4">
+                <input type="search" name="searchInput" class="form-control bg-dark" placeholder="Search" />
             </div>
 
             <!-- Sorting Dropdown -->
-            <div class="col-md-2">
-                <select name="sortOptions" class="form-select bg-info">
+            <div class="col-md-3">
+                <select name="sortOptions" class="form-select bg-dark">
                     <option value="">Sort by...</option>
                     <option value="PriceAsc">Price: Low to High</option>
                     <option value="PriceDesc">Price: High to Low</option>
@@ -55,44 +56,47 @@
                 </select>
             </div>
 
-            <!-- Filtering Dropdowns -->
-            <div class="col-md-2">
-                <select name="filterEngineId" asp-items="@(new SelectList(SelectEngineIdDict, "Key" , "Value"))" class="form-select bg-info">
-                    <option value="">Engine ID...</option>
-
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <select name="filterModelId" asp-items="@(new SelectList(SelectModelIdDict, "Key","Value"))" class="form-select bg-info">
-                    <option value="">Model ID...</option>
-
-                </select>
-            </div>
-            @if (userVehicles.Count != 0)
-            {
-                var SelectUserIdDict = uniqueusers.ToDictionary(y => y.UserId, x => x.UserName);
-                <div class="col-md-2">
-                    <select name="filterUserId" asp-items="@(new SelectList(SelectUserIdDict, "Key","Value"))" class="form-select bg-info">
-                    <option value="">User Name...</option>
-
-                </select>
-            </div>
-            }
-
-            <div class="col-md-2">
-                <select name="filterVehicleId" asp-items="@(new SelectList(SelectVehicleIdList))" class="form-select bg-dark">
-                    <option value="">Vehicle Id...</option>
-
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <select name="role" class="form-select bg-dark">
-                    <option value="">Role Name...</option>
-                    <option value="Buyer">Buyer</option>
-                    <option value="Seller">Seller</option>
-                </select>
+            <!-- Filter Dropdown Menu -->
+            <div class="col-md-4">
+                <div class="dropdown">
+                    <button class="btn bg-dark dropdown-toggle w-100" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-filter-left"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu w-100" aria-labelledby="filterDropdown">
+                        <li>
+                            <select name="filterEngineId" asp-items="@(new SelectList(SelectEngineIdDict, "Key" , "Value"))" class="form-select bg-dark">
+                                <option value="">Engine ID...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="filterModelId" asp-items="@(new SelectList(SelectModelIdDict, "Key","Value"))" class="form-select bg-dark">
+                                <option value="">Model ID...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="filterUserId" asp-items="@(new SelectList(uniqueusers.ToDictionary(y => y.UserId, x => x.UserName), "Key","Value"))" class="form-select bg-dark">
+                                <option value="">User ID...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="userName" asp-items="@(new SelectList(SelectUserNameList))" class="form-select bg-dark">
+                                <option value="">User Name</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="filterVehicleId" asp-items="@(new SelectList(SelectVehicleIdList))" class="form-select bg-dark">
+                                <option value="">Vehicle ID...</option>
+                            </select>
+                        </li>
+                        <li>
+                            <select name="role" class="form-select bg-dark">
+                                <option value="">Role Name...</option>
+                                <option value="Buyer">Buyer</option>
+                                <option value="Seller">Seller</option>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
 
@@ -227,7 +231,8 @@
                                asp-route-Role="@ViewData["role"]"
                                asp-route-filterUserId="@ViewData["filterUserId"]"
                                asp-route-filterEngineId="@ViewData["filterEngineId"]" 
-                               asp-route-filterModelId="@ViewData["filterModelId"]" >Previous</a>
+                               asp-route-filterModelId="@ViewData["filterModelId"]"
+                               asp-route-useName="@ViewData["userName"]">Previous</a>
                         </li>
                     }
 
@@ -241,7 +246,8 @@
                                asp-route-Role="@ViewData["role"]"
                                asp-route-filterUserId="@ViewData["filterUserId"]"
                                asp-route-filterEngineId="@ViewData["filterEngineId"]"
-                               asp-route-filterModelId="@ViewData["filterModelId"]">@i</a>
+                               asp-route-filterModelId="@ViewData["filterModelId"]"
+                               asp-route-useName="@ViewData["userName"]">@i</a>
                         </li>
                     }
 
@@ -255,7 +261,8 @@
                                asp-route-Role="@ViewData["role"]"
                                asp-route-filterUserId="@ViewData["filterUserId"]"
                                asp-route-filterEngineId="@ViewData["filterEngineId"]"
-                               asp-route-filterModelId="@ViewData["filterModelId"]">Next</a>
+                               asp-route-filterModelId="@ViewData["filterModelId"]"
+                               asp-route-useName="@ViewData["userName"]">Next</a>
                         </li>
                     }
                 </ul>
@@ -275,7 +282,8 @@
                asp-route-Role="@ViewData["role"]"
                asp-route-filterUserId="@ViewData["filterUserId"]"
                asp-route-filterEngineId="@ViewData["filterEngineId"]"
-               asp-route-filterModelId="@ViewData["filterModelId"]">1-5</a>
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-useName="@ViewData["userName"]">1-5</a>
         </li>
         <li class="page-item @(Model.PageSize == 10 ? "active " : "")">
             <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="1"
@@ -285,7 +293,8 @@
                asp-route-Role="@ViewData["role"]"
                asp-route-filterUserId="@ViewData["filterUserId"]"
                asp-route-filterEngineId="@ViewData["filterEngineId"]"
-               asp-route-filterModelId="@ViewData["filterModelId"]">1-10</a>
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-useName="@ViewData["userName"]">1-10</a>
         </li>
         <li class="page-item  @(Model.PageSize == 25 ? "active " : "")">
             <a class="page-link" asp-action="PaginatedVehicles" asp-route-PageNumber="1"
@@ -295,7 +304,8 @@
                asp-route-Role="@ViewData["role"]"
                asp-route-filterUserId="@ViewData["filterUserId"]"
                asp-route-filterEngineId="@ViewData["filterEngineId"]"
-               asp-route-filterModelId="@ViewData["filterModelId"]">1-25</a>
+               asp-route-filterModelId="@ViewData["filterModelId"]"
+               asp-route-useName="@ViewData["userName"]">1-25</a>
         </li>
 
     </ul>
@@ -310,6 +320,43 @@
     .pagination > li.active > a {
         background-color: ghostwhite !important;
         color: #7b8ab8 !important;
+    }
+
+    .dropdown-menu {
+        background-color: transparent;
+    }
+
+    .dropdown-item {
+        color: #fff;
+    }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: #495057;
+        }
+
+    .form-select,
+    .form-control,
+    .btn {
+        border-radius: 40px; /* Match this to the border-radius of your buttons */
+    }
+
+    /* Ensure all inputs, selects, and buttons have the same border-radius */
+    .form-control {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .form-select {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    .btn {
+        border-radius: 40px; /* Customize as needed */
+    }
+
+    /* Optionally adjust padding or height to better align with buttons */
+    .form-control, .form-select, .btn {
+        padding: 10px 20px; /* Adjust to align with buttons */
+        height: auto; /* Ensure height matches button height */
     }
 
 </style>
