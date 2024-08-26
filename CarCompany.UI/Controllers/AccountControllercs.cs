@@ -2,6 +2,7 @@
 using Infrastructure.DTO.Dto_Users;
 using Infrastructure.Exceptions;
 using Infrastructure.Helpers;
+using Infrastructure.Interfaces;
 using Infrastructure.Models;
 using Infrastructure.Models.ViewModels.Addresses;
 using Infrastructure.Models.ViewModels.Engines;
@@ -22,12 +23,12 @@ namespace CarCompany.UI.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly Serilog.ILogger _logger;
         private readonly EncryptionService _encryptionservice;
 
-        public AccountController(UserService userService, IMapper mapper, Serilog.ILogger logger, EncryptionService encryptionService)
+        public AccountController(IUserService userService, IMapper mapper, Serilog.ILogger logger, EncryptionService encryptionService)
         {
             _userService = userService;
             _mapper = mapper;

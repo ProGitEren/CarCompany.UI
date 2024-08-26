@@ -47,7 +47,7 @@
                                 <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="Profile">Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="PaginatedUsers">Users</a>
+                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Order" asp-action="PaginatedOrders">Orders</a>
                             </li>
                             @if (User.IsInRole("Seller") || User.IsInRole("Buyer"))
                             {
@@ -57,6 +57,9 @@
                             }
                             @if (User.IsInRole("Admin"))
                             {
+                                <li class="nav-item">
+                                    <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="PaginatedUsers">Users</a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Vehicle" asp-action="PaginatedVehicles">Vehicles</a>
                                 </li>
@@ -70,6 +73,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="VehicleModel" asp-action="PaginatedModels">Models</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="OrderVehicle" asp-action="PaginatedOrderVehicles">Order Vehicles</a>
                             </li>
                         }
 

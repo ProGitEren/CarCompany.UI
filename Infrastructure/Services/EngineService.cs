@@ -29,7 +29,7 @@ namespace Infrastructure.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
-        public EngineService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public EngineService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IMapper mapper) 
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;

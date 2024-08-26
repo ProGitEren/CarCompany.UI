@@ -154,12 +154,15 @@
                     <td class="text-body text-center align-middle">@vehicle.EngineId</td>
                     <td class="text-body text-center align-middle">
                         <div class="-group d-flex justify-content-center align-items-center" role="group">
-                            <a class="btn btn-outline-info btn-sm me-2" asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin">
-                                <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
-                            </a>
-                            <a class="btn btn-outline-danger btn-sm" asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin">
-                                <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
-                            </a>
+                                <a class="btn btn-outline-transparent btn-sm me-2" asp-controller="OrderVehicle" asp-action="Create" asp-route-id="@vehicle.Vin">
+                                    <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Order
+                                </a>
+                                <a class="btn btn-outline-info btn-sm me-2" asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin">
+                                    <i class="bi bi-pencil-fill" style="margin-right:5px;"></i>Edit
+                                </a>
+                                <a class="btn btn-outline-danger btn-sm" asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin">
+                                    <i class="bi bi-trash2-fill" style="margin-right:5px;"></i>Remove
+                                </a>
                         </div>
                     </td>
                 </tr>

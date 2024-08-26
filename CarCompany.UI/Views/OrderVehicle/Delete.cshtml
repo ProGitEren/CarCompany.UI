@@ -1,0 +1,96 @@
+﻿@model OrderVehicleViewModel
+
+<h2 class="title-section text-center">Update Order Vehicle</h2>
+<hr />
+
+<form asp-action="DeletePost" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="ModelName">Model Name</label>
+        <input type="text" class="form-control" asp-for="ModelName" disabled/>
+        <span asp-validation-for="ModelName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price">Price</label>
+        <input type="number" class="form-control" asp-for="Price" step="0.01" disabled />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Existing Images</label>
+        <div class="row">
+            @if (Model.PicturePaths != null && Model.PicturePaths.Any())
+            {
+                foreach (var imagePath in Model.PicturePaths)
+                {
+                    <div class="col-md-4 mb-4 image-card" data-imagepath="@imagePath">
+                        <div class="card">
+                            <img src="@imagePath" class="card-img-top img-fluid" alt="Model Image" style="height: 200px; object-fit: cover;" />
+                            <div class="card-body text-center">
+                                <button disabled type="button" class="btn btn-outline-danger" onclick="removeImage(this, '@imagePath')">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button >
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted">No images available.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center mt-3 " style="border-right:inherit !important;">
+
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
+            <a class="btn btn-primary " asp-controller="OrderVehicle" asp-action="PaginatedOrderVehicles" style="margin-left:10px;background-color:transparent;">
+                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Back To List
+            </a>
+        </div>
+
+
+        <div class="w-10 btn-group d-flex justify-content-between align-items-center me-2" role="group">
+            <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Remove
+            </button>
+        </div>
+
+    </div>
+
+   
+    <partial name= "_DeleteConfirmation"/>
+
+</form>
+
+<style>
+    /* Center the modal vertically and horizontally */
+    .modal {
+        text-align: center;
+        padding: 0 !important;
+    }
+
+        .modal:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-right: -4px;
+        }
+
+    .modal-dialog {
+        display: inline-block;
+        text-align: left;
+        vertical-align: middle;
+    }
+</style>
+
+
+

@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
-    public class VehicleModelService : IVehicleModelService
+    public class VehicleModelService :  IVehicleModelService
     {
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;

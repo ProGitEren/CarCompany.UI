@@ -1,0 +1,59 @@
+﻿@model CreateOrderVehicleViewModel
+<br>
+<br>
+<h2 class="title-section text-center">Register Order Vehicle</h2>
+<hr />
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <!-- Hidden input for VehicleId -->
+    <input type="hidden" asp-for="VehicleId" />
+
+    <!-- Model Name Input -->
+    <div class="form-group">
+        <label asp-for="ModelName">Model Name</label>
+        <input type="text" class="form-control" asp-for="ModelName" />
+        <span asp-validation-for="ModelName" class="text-danger"></span>
+    </div>
+
+    <!-- Price Input -->
+    <div class="form-group">
+        <label asp-for="Price">Price</label>
+        <input type="number" class="form-control" asp-for="Price" step="0.01" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <!-- Images Input (Multiple File Upload) -->
+    <div class="form-group">
+        <label asp-for="Images">Pictures</label>
+        <input type="file" class="form-control" asp-for="Images" multiple id="imagesInput" />
+        <span asp-validation-for="Images" class="text-danger"></span>
+
+        <!-- Display selected file names -->
+        <ul id="fileList" class="list-unstyled mt-2"></ul>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="d-flex justify-content-center mt-3">
+        <div class="btn-group">
+            <button type="submit" class="btn btn-outline-dark">Add</button>
+        </div>
+    </div>
+</form>
+
+<!-- JavaScript to display selected file names -->
+@section Scripts {
+    <script>
+        document.getElementById('imagesInput').addEventListener('change', function () {
+            var fileList = document.getElementById('fileList');
+            fileList.innerHTML = ''; // Clear previous file names
+
+            for (var i = 0; i < this.files.length; i++) {
+                var li = document.createElement('li');
+                li.textContent = this.files[i].name;
+                fileList.appendChild(li);
+            }
+        });
+    </script>
+}

@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using Infrastructure.DTO.Dto_Users;
 using Infrastructure.Models.ViewModels.Users;
 using Infrastructure.Models.ViewModels.Addresses;
+using Infrastucture.Helpers;
+using Infrastucture.Params;
 
 namespace Infrastructure.Interfaces
 {
@@ -27,6 +29,8 @@ namespace Infrastructure.Interfaces
         Task<UserViewModel> ProfileAsync();
 
         Task<IReadOnlyList<UserViewModel>> UsersListAsync();
+
+        Task<Pagination<UserwithdetailDto>> GetUsersAsync(UserParams userParams);
 
 
         Task<UserViewModel> ProfileByEmailAsync(string email);

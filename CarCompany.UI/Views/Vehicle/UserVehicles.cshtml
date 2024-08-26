@@ -33,9 +33,14 @@
                         <p><strong>Baggage Volume:</strong> @vehicle.BaggageVolume</p>
                         <p><strong>Driven KM:</strong> @vehicle.DrivenKM</p>
                     </div>
-                    <div class="card-footer text-center">
-                        <a asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin" class="btn btn-outline-info mx-1" style="background-color:#1e1d1d  ;">Edit</a>
-                        <a asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin" class="btn btn-outline-danger mx-1">Remove</a>
+                    <div class="card-footer ">
+                        
+                        <div class="d-flex justify-content-center w-auto " role="group">
+                            <a class="btn btn-outline-transparent me-1 " asp-controller="Order" asp-action="Create" asp-route-id="@vehicle.Vin"> Order</a>
+                            <a asp-controller="Vehicle" asp-action="Update" asp-route-id="@vehicle.Vin" class="btn btn-outline-info me-1" style="background-color:#1e1d1d  ;">Edit</a>
+                            <a asp-controller="Vehicle" asp-action="Delete" asp-route-id="@vehicle.Vin" class="btn btn-outline-danger ">Remove</a>
+                        </div>
+                    
                     </div>
                 </div>
             </div>

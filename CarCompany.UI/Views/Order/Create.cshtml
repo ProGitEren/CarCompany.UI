@@ -1,0 +1,138 @@
+﻿@using Infrastructure.Models.Enums
+@model CreateOrderViewModel
+
+<h2 class="title-section text-center">Register Order</h2>
+<hr />
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input hidden asp-for="OrderVehicle.VehicleId"/>
+
+    <!-- Order Information Section -->
+    <h3 class="text-center mt-4">Order Information</h3>
+    <div class="d-flex flex-wrap justify-content-between gap-4">
+        <!-- Buyer Email -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="BuyerEmail">Buyer Email</label>
+            <input type="email" class="form-control" asp-for="BuyerEmail" />
+            <span asp-validation-for="BuyerEmail" class="text-danger"></span>
+        </div>
+
+        <!-- Seller Email -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="SellerEmail">Seller Email</label>
+            <input type="email" class="form-control" asp-for="SellerEmail" />
+            <span asp-validation-for="SellerEmail" class="text-danger"></span>
+        </div>
+
+        <!-- Order Type -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderType">Order Type</label>
+            <select asp-for="OrderType" class="form-select">
+                @foreach (var type in Enum.GetValues(typeof(OrderEnums.OrderType)))
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+            <span asp-validation-for="OrderType" class="text-danger"></span>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="PaymentMethod">Payment Method</label>
+            <select asp-for="PaymentMethod" class="form-select">
+                @foreach (var method in Enum.GetValues(typeof(OrderEnums.PaymentMethod)))
+                {
+                    <option value="@method">@method.</option>
+                }
+            </select>
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Order Vehicle Information Section -->
+    <h3 class="text-center mt-4">Order Vehicle Information</h3>
+    <div class="d-flex flex-wrap justify-content-between gap-4">
+        <!-- Vehicle ID -->
+
+        <!-- Model Name -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderVehicle.ModelName">Model Name</label>
+            <input type="text" class="form-control" asp-for="OrderVehicle.ModelName" />
+            <span asp-validation-for="OrderVehicle.ModelName" class="text-danger"></span>
+        </div>
+
+        <!-- Price -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderVehicle.Price">Price</label>
+            <input type="number" class="form-control" asp-for="OrderVehicle.Price" step="0.01" />
+            <span asp-validation-for="OrderVehicle.Price" class="text-danger"></span>
+        </div>
+
+        <!-- Upload Images -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderVehicle.Images">Upload Images</label>
+            <input type="file" class="form-control" asp-for="OrderVehicle.Images" multiple onchange="showFileNames()" />
+            <div id="fileNamesList" class="mt-2"></div>
+            <span asp-validation-for="OrderVehicle.Images" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Transfer Address Section -->
+    <h3 class="text-center mt-4">Transfer Address</h3>
+    <div class="d-flex flex-wrap justify-content-between gap-4">
+        <!-- Transfer Address Fields -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.Name">Address Name</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.Name" />
+            <span asp-validation-for="TransferAddress.Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.City">City</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.City" />
+            <span asp-validation-for="TransferAddress.City" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.State">State</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.State" />
+            <span asp-validation-for="TransferAddress.State" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.Country">Country</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.Country" />
+            <span asp-validation-for="TransferAddress.Country" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.ZipCode">Zip Code</label>
+            <input type="number" class="form-control" asp-for="TransferAddress.ZipCode" />
+            <span asp-validation-for="TransferAddress.ZipCode" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary">Create Order</button>
+        <a href="@Url.Action("PaginatedOrders", "Order")" class="btn btn-secondary">Back to List</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function showFileNames() {
+            const fileInput = document.querySelector('input[type="file"][asp-for="OrderVehicle.Images"]');
+            const fileNamesList = document.getElementById('fileNamesList');
+            fileNamesList.innerHTML = '';
+
+            if (fileInput.files.length > 0) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const fileName = document.createElement('p');
+                    fileName.textContent = fileInput.files[i].name;
+                    fileNamesList.appendChild(fileName);
+                }
+            }
+        }
+    </script>
+}

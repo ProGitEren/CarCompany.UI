@@ -20,13 +20,13 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
-    public class VehicleService : IVehicleService
+    public class VehicleService :  IVehicleService
     {
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
-        public VehicleService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public VehicleService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IMapper mapper) 
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;

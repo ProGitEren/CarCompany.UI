@@ -17,13 +17,13 @@ namespace CarCompany.UI.Controllers
     public class VehicleController : Controller
     {
         private readonly VehicleService _vehicleService;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
         //private readonly VehicleModelService _vehicleModelService;
         private readonly IMapper _mapper;
         private readonly Serilog.ILogger _logger;
 
 
-        public VehicleController(VehicleService vehicleService, IMapper mapper, Serilog.ILogger logger, UserService userservice/*, VehicleModelService vehiclemodelservice*/)
+        public VehicleController(VehicleService vehicleService, IMapper mapper, Serilog.ILogger logger, IUserService userservice/*, VehicleModelService vehiclemodelservice*/)
         {
             _vehicleService = vehicleService;
             _mapper = mapper;

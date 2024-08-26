@@ -1,0 +1,49 @@
+﻿@model OrderVehicleViewModel
+
+@{
+    ViewData["Title"] = "Pictures";
+}
+
+<div class="container mt-5">
+    <!-- Model Name at the Top Center -->
+    <div class="text-center mb-4">
+        <h2 class="display-4">@Model.ModelName</h2>
+    </div>
+
+    <!-- Image Gallery -->
+    <div class="row">
+        @if (Model.PicturePaths != null && Model.PicturePaths.Any())
+        {
+            foreach (var picturePath in Model.PicturePaths)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-transparent">
+                        <img src="@picturePath" class="card-img-top img-fluid" alt="Model Image" style="object-fit: cover;" />
+                        <div class="card-body text-center">
+                            <a href="@Url.Action("DeleteFile", "OrderVehicle", new { Id = Model.Id, filePath = picturePath })" class="btn btn-outline-danger">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p class="text-muted">No images available.</p>
+            </div>
+        }
+    </div>
+
+    <!-- Buttons -->
+    <div class="text-center mt-4">
+        <a href="@Url.Action("AddFile", "OrderVehicle", new { Id = Model.Id })" class="btn btn-outline-success mx-2">
+            <i class="bi bi-upload"></i> Add File
+        </a>
+        <a href="@Url.Action("PaginatedOrderVehicles", "OrderVehicle")" class="btn btn-outline-dark mx-2">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+       
+    </div>
+</div>

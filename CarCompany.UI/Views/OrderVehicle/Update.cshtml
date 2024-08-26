@@ -1,0 +1,130 @@
+﻿@model UpdateOrderVehicleViewModel
+
+<h2 class="title-section text-center">Update Order Vehicle</h2>
+<hr />
+
+<form asp-action="Update" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input type="hidden" asp-for= "Id" />
+    <input type="hidden" asp-for= "VehicleId" />
+    <input type="hidden" asp-for= "ImagePathsToDelete" id="ImagePathsToDelete"/>
+
+    <div class="form-group">
+        <label asp-for="ModelName">Model Name</label>
+        <input type="text" class="form-control" asp-for="ModelName" />
+        <span asp-validation-for="ModelName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price">Price</label>
+        <input type="number" class="form-control" asp-for="Price" step="0.01" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Existing Images</label>
+        <div class="row">
+            @if (Model.ExistingImagePaths != null && Model.ExistingImagePaths.Any())
+            {
+                foreach (var imagePath in Model.ExistingImagePaths)
+                {
+                    <div class="col-md-4 mb-4 image-card" data-imagepath="@imagePath">
+                        <div class="card">
+                            <img src="@imagePath" class="card-img-top img-fluid" alt="Model Image" style="height: 200px; object-fit: cover;" />
+                            <div class="card-body text-center">
+                                <button type="button" class="btn btn-outline-danger" onclick="removeImage(this, '@imagePath')">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted">No images available.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Add New Images Button -->
+    <div class="d-flex justify-content-center mt-3">
+        <button type="button" class="btn btn-outline-success mx-2" data-bs-toggle="modal" data-bs-target="#addFileModal">
+            Add File
+        </button>
+        <button type="submit" class="btn btn-outline-dark mx-2">Update</button>
+        <a href="@Url.Action("PaginatedOrderVehicles", "OrderVehicle")" class="btn btn-secondary mx-2">Back to List</a>
+    </div>
+
+    <!-- Add File Modal -->
+    <div class="modal fade" id="addFileModal" tabindex="-1" aria-labelledby="addFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="addFileModalLabel">Add New File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" asp-for="AddFile.Id" />
+                    <div class="form-group">
+                        <label asp-for="AddFile.Picture">Choose Image</label>
+                        <input type="file" class="form-control" asp-for="AddFile.Picture" />
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Close</button>
+                  @*   <button type="submit" class="btn btn-outline-dark">Upload</button> *@
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+</form>
+
+<style>
+    /* Center the modal vertically and horizontally */
+    .modal {
+        text-align: center;
+        padding: 0 !important;
+    }
+
+        .modal:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-right: -4px;
+        }
+
+    .modal-dialog {
+        display: inline-block;
+        text-align: left;
+        vertical-align: middle;
+    }
+</style>
+
+
+    <script>
+        function removeImage(button, imagePath) {
+            // Remove the image card from the UI
+            const imageCard = button.closest('.image-card');
+            imageCard.remove();
+
+            // Add the image path to the DeleteImagePaths hidden field
+            const deletePathsInput = document.getElementById('ImagePathsToDelete');
+            let deletePaths = deletePathsInput.value ? deletePathsInput.value.split(',') : [];
+
+            deletePaths.push(imagePath);
+
+
+            deletePathsInput.value = deletePaths.join(',');
+
+        }
+    </script>

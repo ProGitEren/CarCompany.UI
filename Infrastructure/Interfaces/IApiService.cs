@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Interfaces
 {
-    public interface IEncryptionService 
+    public interface IApiService
     {
-        string Encrypt(string plainText);
-
-        string Decrypt(string cipherText);
 
     }
-
 }
