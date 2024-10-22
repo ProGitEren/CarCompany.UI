@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor.Infrastructure;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -231,6 +232,8 @@ namespace CarCompany.UI.Controllers
                 }
                 _logger.Information("User retrieval successful.");
                 var model = _mapper.Map<Pagination<UserViewModel>>(result);
+
+                IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
                 return View(model);
             }
             catch (Exception ex)
@@ -238,7 +241,8 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetUsers");
             }
 
-            return RedirectToAction("UsersList", "Account");
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("Index", "Home");
         }
 
 
@@ -263,7 +267,10 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Profile");
             }
 
-            return View(model);
+            if(ModelState.IsValid)
+                return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("Index", "Home");
         }
 
         [Authorize(Roles = "Admin")]
@@ -305,7 +312,8 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, email, _logger, ModelState, "AddressDetail");
             }
 
-            return View();
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return User.IsInRole("Admin") ? RedirectToAction("PaginatedUsers","Account") : RedirectToAction("Profile","Account");
         }
 
         [Authorize]
@@ -326,7 +334,8 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateAddress");
             }
 
-            return View(address);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return User.IsInRole("Admin") ? RedirectToAction("PaginatedUsers", "Account") : RedirectToAction("Profile", "Account");
         }
 
         [Authorize]
@@ -363,7 +372,9 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateUser");
             }
 
-            return View();
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return User.IsInRole("Admin") ? RedirectToAction("PaginatedUsers", "Account") : RedirectToAction("Profile", "Account");
+
         }
 
         [Authorize]
@@ -420,7 +431,9 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, email, _logger, ModelState, "DeleteUser");
             }
 
-            return View();
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedUsers", "Account");
+
         }
 
         [Authorize(Roles = "Admin")]
@@ -438,6 +451,7 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, email, _logger, ModelState, "DeleteUserPost");
             }
 
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("PaginatedUsers", "Account");
         }
 
@@ -461,7 +475,8 @@ namespace CarCompany.UI.Controllers
             catch (Exception ex)
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Logout");
-                throw new Exception($"Failed to log out: {ex.Message}");
+                IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+                return RedirectToAction("Index", "Home");
             }
         }
     }

@@ -1,0 +1,173 @@
+﻿@using Infrastructure.Models.Enums
+@model UpdateOrderViewModel
+
+<h2 class="title-section text-center">Delete Order Vehicle</h2>
+<hr />
+
+<form asp-action="DeletePost" method="post" >
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input hidden asp-for="Id" />
+    <input hidden asp-for="OrderVehicleId" />
+    <input hidden asp-for="OrderVehicle.ImagePathsToDelete" id="ImagePathsToDelete" />
+
+    <!-- Order Information Section -->
+    <h3 class="text-center mt-4">Order Information</h3>
+    <div class="d-flex flex-wrap justify-content-between gap-4">
+        <!-- Buyer Email -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="BuyerEmail">Buyer Email</label>
+            <input type="email" class="form-control" asp-for="BuyerEmail" disabled/>
+            <span asp-validation-for="BuyerEmail" class="text-danger"></span>
+        </div>
+
+        <!-- Seller Email -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="SellerEmail">Seller Email</label>
+            <input type="email" class="form-control" asp-for="SellerEmail" disabled />
+            <span asp-validation-for="SellerEmail" class="text-danger"></span>
+        </div>
+
+        <!-- Order Type -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderType">Order Type</label>
+            <select asp-for="OrderType" class="form-select" disabled>
+                @foreach (var type in Enum.GetValues(typeof(OrderEnums.OrderType)))
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+            <span asp-validation-for="OrderType" class="text-danger"></span>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="PaymentMethod">Payment Method</label>
+            <select asp-for="PaymentMethod" class="form-select" disabled>
+                @foreach (var method in Enum.GetValues(typeof(OrderEnums.PaymentMethod)))
+                {
+                    <option value="@method">@method.</option>
+                }
+            </select>
+            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderStatus">Order Status</label>
+            <select asp-for="OrderStatus" class="form-select" disabled>
+                @foreach (var method in Enum.GetValues(typeof(OrderEnums.OrderStatus)).Cast<OrderEnums.OrderStatus>())
+                {
+                    if (method == OrderEnums.OrderStatus.Sold)
+                        continue;
+
+                    <option value="@method">@method.</option>
+                }
+            </select>
+            <span asp-validation-for="OrderStatus" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Order Vehicle Information Section -->
+    <h3 class="text-center mt-4">Order Vehicle Information</h3>
+    < class="d-flex flex-wrap justify-content-between gap-4">
+        <!-- Vehicle ID -->
+        <input type="hidden" asp-for="OrderVehicle.VehicleId" />
+        <input type="hidden" asp-for="OrderVehicle.Id" />
+
+        <!-- Model Name -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderVehicle.ModelName">Model Name</label>
+            <input type="text" class="form-control" asp-for="OrderVehicle.ModelName" disabled />
+            <span asp-validation-for="OrderVehicle.ModelName" class="text-danger"></span>
+        </div>
+
+        <!-- Price -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="OrderVehicle.Price">Price</label>
+            <input type="number" class="form-control" asp-for="OrderVehicle.Price" step="0.01" disabled/>
+            <span asp-validation-for="OrderVehicle.Price" class="text-danger"></span>
+        </div>
+
+        <!-- Existing Images Section -->
+        <div class="form-group flex-grow-1">
+            <label>Existing Images</label>
+            <div class="row">
+                @if (Model.OrderVehicle.ExistingImagePaths != null && Model.OrderVehicle.ExistingImagePaths.Any())
+                {
+                    foreach (var imagePath in Model.OrderVehicle.ExistingImagePaths)
+                    {
+                        <div class="col-md-4 mb-4 image-card" data-imagepath="@imagePath">
+                            <div class="card">
+                                <img src="@imagePath" class="card-img-top img-fluid" alt="Model Image" style="height: 200px; object-fit: cover;" />
+                                <div class="card-body text-center">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeImage(this, '@imagePath')">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No images available.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+      
+
+    <!-- Transfer Address Section -->
+    <h3 class="text-center mt-4">Transfer Address</h3>
+    <div class="d-flex flex-wrap justify-content-between gap-4">
+        <!-- Transfer Address Fields -->
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.Name">Address Name</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.Name" disabled/>
+            <span asp-validation-for="TransferAddress.Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.City">City</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.City" disabled/>
+            <span asp-validation-for="TransferAddress.City" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.State">State</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.State" disabled/>
+            <span asp-validation-for="TransferAddress.State" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.Country">Country</label>
+            <input type="text" class="form-control" asp-for="TransferAddress.Country" disabled/>
+            <span asp-validation-for="TransferAddress.Country" class="text-danger"></span>
+        </div>
+
+        <div class="form-group flex-grow-1">
+            <label asp-for="TransferAddress.ZipCode">Zip Code</label>
+            <input type="number" class="form-control" asp-for="TransferAddress.ZipCode" disabled/>
+            <span asp-validation-for="TransferAddress.ZipCode" class="text-danger"></span>
+        </div>
+    </div>
+
+        <div class="d-flex justify-content-center mt-3 " style="border-right:inherit !important;">
+
+                <a class="btn btn-outline-transparent " asp-controller="Order" asp-action="PaginatedOrders" style="margin-left:10px;background-color:transparent;">
+                    <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Back To List
+                </a>
+
+
+                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                    <i class="bi bi-sign-turn-right-fill" style="margin-right:5px;"></i>Remove
+                </button>
+        </div>
+
+
+
+        <partial name="_DeleteConfirmation" />
+
+</form>
+

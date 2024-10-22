@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@using Infrastructure.Models.Enums
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -46,9 +48,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Account" asp-action="Profile">Profile</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Order" asp-action="PaginatedOrders">Orders</a>
-                            </li>
+                           
                             @if (User.IsInRole("Seller") || User.IsInRole("Buyer"))
                             {
                                 <li class="nav-item">
@@ -64,6 +64,40 @@
                                     <a class="nav-link" style="color:dimgrey" asp-area="" asp-controller="Vehicle" asp-action="PaginatedVehicles">Vehicles</a>
                                 </li>
                             }
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" style="color:dimgrey" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Orders</a>
+                                <div class="dropdown-menu" style="background-color:transparent;">
+                                    <!-- For Seller -->
+                                    @if (User.IsInRole("Seller"))
+                                    {
+                                        <a class="dropdown-item" style="color:dimgrey" asp-area="" asp-controller="Order" asp-action="PaginatedOrders">All Orders</a>
+                                        <a class="dropdown-item" style="color:dimgrey" asp-area="" asp-controller="Order" asp-action="PaginatedOrders"
+                                           asp-route-sellerEmail="@User.Claims.Where(x => x.Type == ClaimTypes.Email).FirstOrDefault()?.Value">My Orders</a>
+                                    }
+
+                                    <!-- For Admin -->
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a class="dropdown-item" style="color:dimgrey" asp-area="" asp-controller="Order" asp-action="PaginatedOrders">All Orders</a>
+                                    }
+
+
+                                    @if (User.IsInRole("Buyer"))
+                                    {
+                                        <a class="dropdown-item" style="color:dimgrey" asp-area="" asp-controller="Order" asp-action="PaginatedOrders"
+                                           asp-route-orderStatus="@OrderEnums.OrderStatus.Active.ToString()">
+                                            All Orders
+                                        </a>
+                                        <a class="dropdown-item" style="color:dimgrey" asp-controller="Order" asp-action="PaginatedOrders"
+                                           asp-route-buyerEmail="@User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value">
+                                            My Orders
+                                        </a>
+
+                                    }
+
+                                </div>
+                            </li>
                         }
 
                          @if (User.IsInRole("Admin"))
@@ -80,16 +114,7 @@
                         }
 
                        
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" style="color:dimgrey" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Separated link</a>
-                            </div>
-                        </li>
+                        
                     </ul>
 
                     <div class="ml-auto " style="padding:10px; margin-right:inherit">

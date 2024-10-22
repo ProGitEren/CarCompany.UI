@@ -18,12 +18,12 @@ namespace CarCompany.UI.Controllers
     public class VehicleModelController : Controller
     {
         //private readonly VehicleService _vehicleService;
-        private readonly VehicleModelService _vehicleModelService;
+        private readonly IVehicleModelService _vehicleModelService;
         private readonly IMapper _mapper;
         private readonly Serilog.ILogger _logger;
 
 
-        public VehicleModelController(/*VehicleService vehicleService,*/ IMapper mapper, Serilog.ILogger logger, VehicleModelService vehiclemodelservice)
+        public VehicleModelController(IMapper mapper, Serilog.ILogger logger, IVehicleModelService vehiclemodelservice)
         {
             //_vehicleService = vehicleService;
             _mapper = mapper;
@@ -89,6 +89,8 @@ namespace CarCompany.UI.Controllers
                 }
                 _logger.Information("Model retrieval successful.");
                 var model = _mapper.Map<Pagination<VehicleModelUserViewModel>>(result);
+
+                IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
                 return View(model);
             }
             catch (Exception ex)
@@ -96,7 +98,8 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetModels");
             }
 
-            return RedirectToAction("ModelList","VehicleModel");
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("Index","Home");
         }
 
         [HttpGet]
@@ -158,7 +161,10 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateModel");
             }
 
-            return View(model);
+            if(ModelState.IsValid) 
+                return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedModels", "VehicleModel");
         }
 
         [HttpPost]
@@ -204,7 +210,10 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteModel");
             }
 
-            return View(model);
+            if (ModelState.IsValid)
+                return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedModels", "VehicleModel");
         }
 
         [HttpPost]
@@ -227,7 +236,8 @@ namespace CarCompany.UI.Controllers
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteModel");
             }
-
+           
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("PaginatedModels", "VehicleModel");
         }
 

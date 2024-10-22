@@ -20,6 +20,8 @@
         }
     </div>
 
+    <div asp-validation-summary="All" class="text-danger"></div>
+
     <form method="get" asp-action="PaginatedModels">
         <div class="row mb-5">
             <input hidden asp-for="PageSize" />
@@ -94,7 +96,7 @@
     <div class="row">
         @foreach (var Model in Model.Data)
         {
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 mb-4 d-flex">
                 <div class="card text-white bg-dark border-5" style="border-radius: 40px;">
                     <div class="card-header bg-secondary text-primary">
                         <h3 class="header-section text-center">@Model.ModelShortName</h3>

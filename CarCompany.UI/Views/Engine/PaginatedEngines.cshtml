@@ -20,6 +20,8 @@
 
     </div>
 
+    <div asp-validation-summary="All" class="text-danger"></div>
+
 
     <form method="get" asp-action="PaginatedEngines">
         <div class="row mb-5">
@@ -86,7 +88,7 @@
     <div class="row">
         @foreach (var Engine in Model.Data)
         {
-            <div class="col-md-4 mb-5">
+            <div class="col-md-4 mb- d-flex">
                 <div class="card text-white bg-dark mb-3 border-5" style="max-width: 20rem;border-radius:40px;">
                     <div class="card-header bg-secondary text-primary"> <h3 class="header-section text-center">@Engine.EngineCode</h3></div>
                     <div class="card-body">

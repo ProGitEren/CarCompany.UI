@@ -1,9 +1,14 @@
-using Infrastructure;
+using Infrastructure.Configuration;
+using Infrastructure.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Configure serilog
+builder.WebHost.UseUrls("https://localhost:7064");
+
 builder.SeriLogConfiguration();
+
+
+//Configure serilog
 
 
 // Add services to the container.
@@ -32,5 +37,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.UseMiddleware<CookieRenewalMiddleware>();
 
 app.Run();

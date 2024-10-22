@@ -1,4 +1,6 @@
 ﻿@using Infrastucture.Helpers
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 @using static Infrastructure.Models.Enums.OrderEnums
 @model Pagination<OrderViewModel>
 
@@ -11,13 +13,14 @@
     var orderStatusList = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().ToDictionary(v => v, v => v.ToString());
     var orderTypeList = Enum.GetValues(typeof(OrderType)).Cast<OrderType>().ToDictionary(v => v, v => v.ToString());
     var paymentMethodList = Enum.GetValues(typeof(PaymentMethod)).Cast<PaymentMethod>().ToDictionary(v => v, v => v.ToString());
+    
 }
 
 <br>
 <br>
 
 <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px; position: relative;">
-    <h2 class="title-section" style="margin: 0 auto;">Users</h2>
+    <h2 class="title-section" style="margin: 0 auto;">Orders</h2>
     @if (User.IsInRole("Seller"))
     {
         <a asp-controller="Vehicle" asp-action="UserVehicles" class="btn btn-primary text-dark" style="position: absolute; right: 0;background-color:cornflowerblue;">
@@ -27,10 +30,13 @@
 </div>
 <hr />
 
+<div asp-validation-summary="All" class="text-danger"></div>
+
 <form method="get" asp-action="PaginatedOrders">
+
     <div class="row mb-5">
         <input hidden asp-for="PageSize" />
-
+       
         <!-- Search Input -->
         <div class="col-md-4">
             <input type="search" name="searchInput" class="form-control bg-dark" placeholder="Search" />
@@ -102,7 +108,7 @@
         <div class="col-md-1">
             <button type="submit" class="btn bg-dark">Apply</button>
         </div>
-
+        
     </div>
 </form>
 
@@ -110,37 +116,73 @@
 <div class="row">
     @foreach (var order in Model.Data)
     {
-        <div class="col-md-4 mb-4">
-            <div class="card bg-dark text-white h-100">
-                <div class="card-body">
-                    <p class="card-text"><strong>Buyer:</strong> @order.BuyerEmail</p>
-                    <p class="card-text"><strong>Seller:</strong> @order.SellerEmail</p>
-                    <p class="card-text"><strong>Order Date:</strong> @order.OrderedDate?.ToString("MM/dd/yyyy")</p>
-                    <p class="card-text"><strong>Order Status:</strong> @order.OrderStatus</p>
-                    <p class="card-text"><strong>Order Type:</strong> @order.OrderType</p>
-                    <p class="card-text"><strong>Payment Method:</strong> @order.PaymentMethod</p>
+         
+
+        <div class="col-md-6 mb-4 d-flex">
+
+            <div class="card bg-dark text-white border border-5">
+                <div class="card-header text-center @GetCardHeaderClass(order.OrderStatus)">
+                    <h3 class="title-section text-dark text-bo mb-0">@order.OrderStatus</h3>
+                    @if (order.OrderStatus == OrderStatus.Sold)
+                    {
+                        <p class="card-text mt-2 mb-0" style="color:lightgrey"><em>@order.BuyerEmail</em></p>
+                    }
                 </div>
-                <div class="card-footer text-center">
-                    <div class="btn-group" role="group">
-                        <a class="btn btn-outline-light mx-1" asp-controller="Order" asp-action="OrderVehicle" asp-route-id="@order.OrderVehicleId">
+                <div class="card-body">
+                    <div class="card-item d-flex justify-content-between">
+                        <span class="card-label text-warning">Seller:</span>
+                        <span class="card-value">@order.SellerEmail</span>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="card-item d-flex justify-content-between">
+                        <span class="card-label text-warning">Order Date:</span>
+                        <span class="card-value">@order.OrderedDate?.ToString("MM/dd/yyyy")</span>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="card-item d-flex justify-content-between">
+                        <span class="card-label text-warning">Order Type:</span>
+                        <span class="card-value">@order.OrderType</span>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="card-item d-flex justify-content-between">
+                        <span class="card-label text-warning">Payment Method:</span>
+                        <span class="card-value">@order.PaymentMethod</span>
+                    </div>
+                </div>
+
+                
+                <div class="card-footer d-flex justify-content-center">
+                    
+                        <a class="btn btn-outline-dark mx-1" asp-controller="OrderVehicle" asp-action="Details" asp-route-id="@order.OrderVehicleId">
                             <i class="bi bi-images"></i> Vehicle
                         </a>
-                        @if (User.IsInRole("Seller"))
+                        @if (User.IsInRole("Seller") && User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value == order.SellerEmail)
                         {
-                            <a class="btn btn-outline-light mx-1" asp-controller="Order" asp-action="Update" asp-route-id="@order.Id">
+                            <a type="button" class="btn btn-outline-success mx-1" data-bs-toggle="modal" data-bs-target="#confirmStatusChangeModal" data-order-id="@order.Id">
+                                <i class="bi bi-pencil"></i> Mark as Sold
+                            </a>
+                        
+                            <a class="btn btn-outline-info mx-1" asp-controller="Order" asp-action="Update" asp-route-id="@order.Id">
                                 <i class="bi bi-pencil"></i> Edit
                             </a>
                             <a class="btn btn-outline-danger mx-1" asp-controller="Order" asp-action="Delete" asp-route-id="@order.Id">
                                 <i class="bi bi-trash"></i> Delete
                             </a>
                         }
-                    </div>
+                        @if (User.IsInRole("Buyer"))
+
+                        {
+                            <a class="btn btn-outline-transparent mx-1" asp-controller="Order" asp-action="Details" asp-route-id="@order.Id">
+                                <i class="bi bi-pencil"></i> Details
+                            </a>
+                        }
+
                 </div>
             </div>
         </div>
     }
+    <partial name="_MarkSoldPopUp"/>
 </div>
-
 
 <div class="d-flex justify-content-center mt-4">
     @if (Model.TotalCount != 0)
@@ -150,7 +192,7 @@
                 @if (Model.PageNumber != 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="@(Model.PageNumber - 1)"
+                        <a class="page-link" asp-action="PaginatedOrders" asp-route-PageNumber="@(Model.PageNumber - 1)"
                            asp-route-PageSize="@(Model.PageSize)"
                            asp-route-sortoptions="@ViewData["sortoptions"]"
                            asp-route-searchInput="@ViewData["searchInput"]"
@@ -167,7 +209,7 @@
                 @for (int i = 1; i <= Model.TotalCount / Model.PageSize + 1; i++)
                 {
                     <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                        <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="@i"
+                        <a class="page-link" asp-action="PaginatedOrders" asp-route-PageNumber="@i"
                            asp-route-PageSize="@(Model.PageSize)"
                            asp-route-sortoptions="@ViewData["sortoptions"]"
                            asp-route-searchInput="@ViewData["searchInput"]"
@@ -183,7 +225,7 @@
                 @if (Model.PageNumber < Model.TotalCount / Model.PageSize + 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="@(Model.PageNumber + 1)"
+                        <a class="page-link" asp-action="PaginatedOrders" asp-route-PageNumber="@(Model.PageNumber + 1)"
                            asp-route-PageSize="@(Model.PageSize)"
                            asp-route-sortoptions="@ViewData["sortoptions"]"
                            asp-route-searchInput="@ViewData["searchInput"]"
@@ -205,7 +247,7 @@
     <span></span>
     <ul class="pagination bg-dark ms-2">
         <li class="page-item @(Model.PageSize == 5 ? "active" : "")">
-            <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="1"
+            <a class="page-link" asp-action="PaginatedOrders" asp-route-PageNumber="1"
                asp-route-PageSize="5"
                asp-route-sortoptions="@ViewData["sortoptions"]"
                asp-route-searchInput="@ViewData["searchInput"]"
@@ -217,7 +259,7 @@
                asp-route-paymentMethod="@ViewData["paymentMethod"]">1-5</a>
         </li>
         <li class="page-item @(Model.PageSize == 10 ? "active " : "")">
-            <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="1"
+            <a class="page-link" asp-action="PaginatedOrders" asp-route-PageNumber="1"
                asp-route-PageSize="10"
                asp-route-sortoptions="@ViewData["sortoptions"]"
                asp-route-searchInput="@ViewData["searchInput"]"
@@ -229,7 +271,7 @@
                asp-route-paymentMethod="@ViewData["paymentMethod"]">1-10</a>
         </li>
         <li class="page-item  @(Model.PageSize == 25 ? "active " : "")">
-            <a class="page-link" asp-action="PaginatedUsers" asp-route-PageNumber="1"
+            <a class="page-link" asp-action="PaginatedOrders" asp-route-PageNumber="1"
                asp-route-PageSize="25"
                asp-route-sortoptions="@ViewData["sortoptions"]"
                asp-route-searchInput="@ViewData["searchInput"]"
@@ -250,49 +292,18 @@
 </div>
 
 
-
-<style>
-
-    .pagination > li.active > a {
-        background-color: ghostwhite !important;
-        color: #7b8ab8 !important;
+@functions {
+    public string GetCardHeaderClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Active => "bg-success text-white",
+            OrderStatus.Sold => "bg-danger text-white",
+            OrderStatus.NotActive => "bg-secondary text-white",
+            _ => "bg-dark text-white"
+        };
     }
+}
 
-    .dropdown-menu {
-        background-color: transparent;
-    }
 
-    .dropdown-item {
-        color: #fff;
-    }
 
-        .dropdown-item:hover, .dropdown-item:focus {
-            background-color: #495057;
-        }
-
-    .form-select,
-    .form-control,
-    .btn {
-        border-radius: 40px; /* Match this to the border-radius of your buttons */
-    }
-
-    /* Ensure all inputs, selects, and buttons have the same border-radius */
-    .form-control {
-        border-radius: 40px; /* Customize as needed */
-    }
-
-    .form-select {
-        border-radius: 40px; /* Customize as needed */
-    }
-
-    .btn {
-        border-radius: 40px; /* Customize as needed */
-    }
-
-    /* Optionally adjust padding or height to better align with buttons */
-    .form-control, .form-select, .btn {
-        padding: 10px 20px; /* Adjust to align with buttons */
-        height: auto; /* Ensure height matches button height */
-    }
-
-</style>

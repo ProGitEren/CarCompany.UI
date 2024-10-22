@@ -18,6 +18,8 @@
 </div>
 <hr />
 
+<div asp-validation-summary="All" class="text-danger"></div>
+
 <form method="get" asp-action="PaginatedOrderVehicles">
     <div class="row mb-5">
         <input hidden asp-for="PageSize" />

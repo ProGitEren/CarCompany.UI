@@ -16,14 +16,14 @@ namespace CarCompany.UI.Controllers
 {
     public class VehicleController : Controller
     {
-        private readonly VehicleService _vehicleService;
+        private readonly IVehicleService _vehicleService;
         private readonly IUserService _userService;
         //private readonly VehicleModelService _vehicleModelService;
         private readonly IMapper _mapper;
         private readonly Serilog.ILogger _logger;
 
 
-        public VehicleController(VehicleService vehicleService, IMapper mapper, Serilog.ILogger logger, IUserService userservice/*, VehicleModelService vehiclemodelservice*/)
+        public VehicleController(IVehicleService vehicleService, IMapper mapper, Serilog.ILogger logger, IUserService userservice/*, VehicleModelService vehiclemodelservice*/)
         {
             _vehicleService = vehicleService;
             _mapper = mapper;
@@ -53,8 +53,11 @@ namespace CarCompany.UI.Controllers
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UserVehicles");
             }
+            if(ModelState.IsValid)
+                return View(model);
 
-            return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -67,8 +70,11 @@ namespace CarCompany.UI.Controllers
             {
                 ExceptionHelper.HandleException(new UIException(System.Net.HttpStatusCode.NotFound, "The Id of the model is null"), null, _logger, ModelState, "CreateVehicle");
             }
+            if(ModelState.IsValid)
+                return View(model);
 
-            return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedVehicles","Vehicle");
         }
 
         [HttpPost]
@@ -111,7 +117,8 @@ namespace CarCompany.UI.Controllers
 
             }
 
-            return View(vehicle);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedVehicles", "Vehicle");
         }
 
         [HttpGet]
@@ -174,14 +181,16 @@ namespace CarCompany.UI.Controllers
                 }
                 _logger.Information("Model retrieval successful.");
                 var model = _mapper.Map<Pagination<VehicleViewModel>>(result);
+
+                IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
                 return View(model);
             }
             catch (Exception ex)
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetVehicles");
             }
-
-            return RedirectToAction("Vehicles", "Vehicle");
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("Index", "Home");
         }
 
 
@@ -205,8 +214,11 @@ namespace CarCompany.UI.Controllers
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
             }
+            if(ModelState.IsValid)
+                return View(model);
 
-            return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedVehicles", "Vehicle");
         }
 
         [HttpPost]
@@ -251,7 +263,11 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
             }
 
-            return View(model);
+            if (ModelState.IsValid)
+                return View(model);
+
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedVehicles", "Vehicle");
         }
 
         [HttpPost]
@@ -275,6 +291,7 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
             }
 
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return User.IsInRole("Admin") ? RedirectToAction("PaginatedVehicles", "Vehicle") : RedirectToAction("UserVehicles", "Vehicle");
         }
 

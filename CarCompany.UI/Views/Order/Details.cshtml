@@ -1,0 +1,81 @@
+﻿@using System.Security.Claims
+@model OrderViewModel
+
+<div class="container mt-5">
+    <!-- Title Section -->
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-dark" style="text-shadow: 2px 2px 4px #000;">Order Details</h1>
+    </div>
+
+    <!-- Order Details Card -->
+    <div class="card bg-dark text-white mb-5" style="border-radius: 20px; padding: 20px;">
+        <div class="row g-0">
+            <div class="col-md-12">
+                <div class="details-container p-4">
+                    <!-- Order Information -->
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Order ID</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.Id</p>
+                    </div>
+                   
+                    @if (Model.OrderStatus == Infrastructure.Models.Enums.OrderEnums.OrderStatus.Sold)
+                    {
+                        <hr class="border-secondary">
+
+                          <div class="form-group mb-4">
+                            <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Buyer Email</label>
+                            <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.BuyerEmail</p>
+                        </div>
+                    }
+                   
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Seller Email</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.SellerEmail</p>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Ordered Date</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.OrderedDate?.ToString("MM/dd/yyyy")</p>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Order Status</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.OrderStatus</p>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Order Type</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.OrderType</p>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Payment Method</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.PaymentMethod</p>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Transfer Address</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.TransferAddress.Name, @Model.TransferAddress.City, @Model.TransferAddress.State, @Model.TransferAddress.Country - @Model.TransferAddress.ZipCode</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conditional Back to List Button -->
+    <div class="text-center mt-4">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="PaginatedOrders" class="btn bg-dark btn-lg" style="width: 200px;">Back to List</a>
+        }
+        else if (User.IsInRole("Seller"))
+        {
+            <a asp-action="PaginatedOrders" class="btn bg-dark btn-lg" style="width: 200px;">Back to List</a>
+        }
+        else if (User.IsInRole("Buyer"))
+        {
+            <a asp-action="PaginatedOrders" asp-route-buyerEmail="@User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value" class="btn bg-dark btn-lg" style="width: 200px;">Back to List</a>
+        }
+    </div>
+</div>

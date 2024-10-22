@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Infrastructure.Helpers;
+using Infrastructure.Interfaces;
 using Infrastructure.Models.ViewModels.Orders;
 using Infrastructure.Models.ViewModels.OrderVehicles;
 using Infrastructure.Params;
@@ -7,25 +8,31 @@ using Infrastructure.Services;
 using Infrastucture.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
+using System.Data;
+using System.Security.Claims;
+using static Infrastructure.Models.Enums.OrderEnums;
 
 namespace CarCompany.UI.Controllers
 {
     public class OrderController : Controller
     {
         //private readonly VehicleService _vehicleService;
-        private readonly OrderService _orderService;
+        private readonly IOrderService _orderService;
         private readonly IMapper _mapper;
         private readonly Serilog.ILogger _logger;
-        private readonly OrderVehicleService _orderVehicleService;
+        private readonly IOrderVehicleService _orderVehicleService;
 
 
-        public OrderController(IMapper mapper, Serilog.ILogger logger, OrderVehicleService orderVehicleService,OrderService orderService)
+        public OrderController(IMapper mapper, Serilog.ILogger logger, IOrderVehicleService orderVehicleService,IOrderService orderService)
         {
-            //_vehicleService = vehicleService;
             _mapper = mapper;
             _logger = logger;
             _orderService = orderService;
             _orderVehicleService = orderVehicleService;
+            
         }
 
       
@@ -58,6 +65,9 @@ namespace CarCompany.UI.Controllers
             ViewData["orderStatus"] = orderStatus;
             ViewData["paymentMethod"] = paymentMethod;
 
+           
+
+
             try
             {
                 var result = await _orderService.GetOrdersAsync(param);
@@ -73,6 +83,7 @@ namespace CarCompany.UI.Controllers
                 ViewData["VehicleIdList"] = string.Join(",", (await _orderVehicleService.GetOrderVehiclesAsync(ordervehicleparam))
                     .Data.Select(x => x.VehicleId));
 
+                IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
                 return View(model);
             }
             catch (Exception ex)
@@ -80,18 +91,24 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetOrders");
             }
 
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("Index", "Home");
-        }
+        }                                       
 
         [HttpGet]
         [Authorize(Roles = "Seller")]
         public async Task<IActionResult> Create(string? Id)
         {
+            var user = User;
+            if (user == null) { ModelState.AddModelError("","Current user could not be found"); }
+            var userEmail = user.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value;
+        
+            var model = new CreateOrderViewModel { SellerEmail = userEmail, OrderVehicle = new CreateOrderVehicleViewModel { VehicleId = Id } };
+            if(ModelState.IsValid)
+                return View(model);
 
-
-            var model = new CreateOrderViewModel { OrderVehicle = new CreateOrderVehicleViewModel { VehicleId = Id } };
-
-            return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrders", "Order");
         }
 
         [HttpPost]
@@ -109,9 +126,7 @@ namespace CarCompany.UI.Controllers
 
             catch (Exception ex)
             {
-                TempData["error"] = "Problem occured on registering the new order .";
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateOrder");
-
             }
 
             return View(model);
@@ -124,45 +139,49 @@ namespace CarCompany.UI.Controllers
         [Authorize(Roles = "Seller")]
         public async Task<IActionResult> Update(int? Id)
         {
-            var model = new UpdateOrderVehicleViewModel();
+            var model = new UpdateOrderViewModel();
             try
             {
-                model = _mapper.Map<UpdateOrderVehicleViewModel>(await _orderVehicleService.GetOrderVehicleAsync(Id));
+                model = _mapper.Map<UpdateOrderViewModel>(await _orderService.GetOrderAsync(Id));
+                model.OrderVehicle = _mapper.Map <UpdateOrderVehicleViewModel>(await _orderVehicleService.GetOrderVehicleAsync(model.OrderVehicleId));
                 if (model == null)
                 {
-                    ModelState.AddModelError("", "The Order Vehicle could not be found.");
-                    _logger.Warning("Order Vehicle retrieval failed.");
+                    ModelState.AddModelError("", "The Order could not be found.");
+                    _logger.Warning("Order retrieval failed.");
                 }
-                model.AddFile = new AddFileViewModel { Id = model.Id };
-                _logger.Information("Order Vehicle retrieval successful.");
+                model.OrderVehicle.AddFile = new AddFileViewModel { Id = model.OrderVehicleId };
+                _logger.Information("Order retrieval successful.");
             }
             catch (Exception ex)
             {
-                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateOrderVehicle");
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateOrder");
             }
+            if (ModelState.IsValid) 
+                return View(model);
 
-            return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrders", "Order");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(UpdateOrderVehicleViewModel model)
+        public async Task<IActionResult> Update(UpdateOrderViewModel model)
         {
 
             try
             {
-                var resultmodel = await _orderVehicleService.UpdateOrderVehicleAsync(model);
+                var resultmodel = await _orderService.UpdateOrderAsync(model);
                 if (resultmodel == null)
                 {
-                    ModelState.AddModelError("", "The Order vehicle could not be found.");
-                    _logger.Warning("Order Vehicle update failed.");
+                    ModelState.AddModelError("", "The Order could not be found.");
+                    _logger.Warning("Order update failed.");
                 }
 
-                _logger.Information("Order vehicle update successful.");
-                if (model.AddFile.Picture is not null)
+                _logger.Information("Order update successful.");
+                if (model.OrderVehicle.AddFile.Picture is not null)
                 {
                     try
                     {
-                        var stringresult = await _orderVehicleService.AddFileAsync(model.AddFile);
+                        var stringresult = await _orderVehicleService.AddFileAsync(model.OrderVehicle.AddFile);
 
                         TempData["success"] = stringresult;
 
@@ -174,10 +193,10 @@ namespace CarCompany.UI.Controllers
                     }
                 }
                 // Split the comma-separated string into a list of paths
-                if (!string.IsNullOrEmpty(model.ImagePathsToDelete))
+                if (!string.IsNullOrEmpty(model.OrderVehicle.ImagePathsToDelete))
                 {
-                    var pathsToDelete = model.ImagePathsToDelete.Split(',').ToList();
-                    var deletefilemodel = new DeleteFileViewModel { Id = model.Id };
+                    var pathsToDelete = model.OrderVehicle.ImagePathsToDelete.Split(',').ToList();
+                    var deletefilemodel = new DeleteFileViewModel { Id = model.OrderVehicleId };
                     foreach (var imagePath in pathsToDelete)
                     {
                         deletefilemodel.FilePath = imagePath;
@@ -185,13 +204,14 @@ namespace CarCompany.UI.Controllers
 
                     }
                 }
-                return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
+                if(ModelState.IsValid)
+                    return RedirectToAction("PaginatedOrders", "Order");
             }
             catch (Exception ex)
             {
-                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateOrderVehicle");
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateOrder");
             }
-
+            
             return View(model);
 
         }
@@ -200,24 +220,28 @@ namespace CarCompany.UI.Controllers
         [Authorize(Roles = "Seller")]
         public async Task<IActionResult> Delete(int? Id)
         {
-            var model = new OrderVehicleViewModel();
+            var model = new UpdateOrderViewModel();
             try
             {
-                model = await _orderVehicleService.GetOrderVehicleAsync(Id);
+                model = _mapper.Map<UpdateOrderViewModel>(await _orderService.GetOrderAsync(Id));
+                model.OrderVehicle = _mapper.Map<UpdateOrderVehicleViewModel>(await _orderVehicleService.GetOrderVehicleAsync(model.OrderVehicleId));
                 if (model == null)
                 {
-                    ModelState.AddModelError("", "The Order Vehicle could not be found.");
-                    _logger.Warning("Order Vehicle retrieval failed.");
+                    ModelState.AddModelError("", "The Order could not be found.");
+                    _logger.Warning("Order retrieval failed.");
 
                 }
-                _logger.Information("Order Vehicle retrieval successful.");
+                _logger.Information("Order retrieval successful.");
             }
             catch (Exception ex)
             {
-                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteORderVehicle");
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteOrder");
             }
-
-            return View(model);
+            if (ModelState.IsValid)
+                return View(model);
+            
+            IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrders", "Order");
         }
 
         [HttpPost]
@@ -226,25 +250,87 @@ namespace CarCompany.UI.Controllers
 
             try
             {
-                var stringresult = await _orderVehicleService.DeleteOrderVehicleAsync(Id);
+                var stringresult = await _orderService.DeleteOrderAsync(Id);
                 if (stringresult == null)
                 {
-                    ModelState.AddModelError("", "The Model could not be found.");
-                    _logger.Warning("Order Vehicle delete failed.");
+                    ModelState.AddModelError("", "The Order could not be found.");
+                    _logger.Warning("Order delete failed.");
                 }
-                TempData["success"] = "The Order Vehicle successfully deleted.";
-                _logger.Information("Order Vehicle delete successful.");
+                TempData["success"] = "The Order successfully deleted.";
+                _logger.Information("Order delete successful.");
 
             }
             catch (Exception ex)
             {
-                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteORderVehicle");
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteOrder");
             }
 
-            return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrders", "Order");
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Seller")]
+        public async Task<IActionResult> StatusSold(int? Id, string? buyerEmail)
+        {
+            if (Id is not null)
+            {
+                var order = await _orderService.GetOrderAsync(Id);
 
+                if (order is not null)
+                {
+                    try
+                    {
+                        order.OrderStatus = OrderStatus.Sold;
+                        order.BuyerEmail = buyerEmail;
+                        var updatemodel = _mapper.Map<UpdateOrderViewModel>(order);
+                        var ordervehicle = await _orderVehicleService.GetOrderVehicleAsync(order.OrderVehicleId);
+                        if (ordervehicle is null) { return RedirectToAction("PaginatedOrders", "Order"); }
+                        updatemodel.OrderVehicle = _mapper.Map<UpdateOrderVehicleViewModel>(ordervehicle);
+
+                        var model = await _orderService.UpdateOrderAsync(updatemodel);
+                        TempData["success"] = "Order Status successfully changed";
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionHelper.HandleException(ex, null, _logger, ModelState, "Vehicles");
+                    }
+                   
+                }
+                else 
+                {
+                     ModelState.AddModelError("", "The Order with this id could not found");
+                }
+            }
+            else 
+            {
+                ModelState.AddModelError("", "The Id could not found");
+            }
+
+
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrders", "Order");
+            
+        }
+
+        public async Task<IActionResult> Details(int? Id) 
+        {
+            
+            if (Id is not null)
+            {
+                var model = await _orderService.GetOrderAsync(Id);
+                if(model is not null) 
+                {
+                    return View(model);
+                } 
+                ModelState.AddModelError("", "The order with this Id could not found.");
+            }
+            ModelState.AddModelError("", "The received Id is null.");
+
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrders", "Order");
         
+        }
+
     }
 }

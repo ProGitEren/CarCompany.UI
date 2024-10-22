@@ -21,12 +21,12 @@ namespace CarCompany.UI.Controllers
     [Authorize(Roles = "Admin")]
     public class EngineController : Controller
     {
-        private readonly EngineService _engineService;
+        private readonly IEngineService _engineService;
         private readonly IMapper _mapper;
         private readonly Serilog.ILogger _logger;
 
 
-        public EngineController(IMapper mapper, Serilog.ILogger logger, EngineService engineService)
+        public EngineController(IMapper mapper, Serilog.ILogger logger, IEngineService engineService)
         {
             _mapper = mapper;
             _logger = logger;
@@ -89,6 +89,8 @@ namespace CarCompany.UI.Controllers
                 }
                 _logger.Information("Model retrieval successful.");
                 var model = _mapper.Map<Pagination<EngineViewModel>>(result);
+
+                IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
                 return View(model);
             }
             catch (Exception ex)
@@ -96,18 +98,15 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetEngines");
             }
 
-            return RedirectToAction("EngineList", "Engine");
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
-
-
             var model = new RegisterEngineViewModel();
-
-
             return View(model);
         }
 
@@ -126,7 +125,7 @@ namespace CarCompany.UI.Controllers
 
             catch (Exception ex)
             {
-                TempData["error"] = "Problem occured on registering the new engine.";
+              
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "CreateEngine");
 
             }
@@ -156,8 +155,11 @@ namespace CarCompany.UI.Controllers
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateEngine");
             }
+            if (ModelState.IsValid)
+                return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedEngines", "Engine");
 
-            return View(model);
         }
 
         [HttpPost]
@@ -173,7 +175,9 @@ namespace CarCompany.UI.Controllers
                     _logger.Warning("Engine update failed.");
                 }
                 _logger.Information("Engine update successful.");
-                return RedirectToAction("PaginatedEngines", "Engine");
+
+                if(ModelState.IsValid)
+                    return RedirectToAction("PaginatedEngines", "Engine");
             }
             catch (Exception ex)
             {
@@ -204,8 +208,11 @@ namespace CarCompany.UI.Controllers
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteEngine");
             }
+            if(ModelState.IsValid)
+                return View(model);
 
-            return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedEngines", "Engine");
         }
 
         [HttpPost]
@@ -230,6 +237,7 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteEngine");
             }
 
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("PaginatedEngines", "Engine");
         }
 

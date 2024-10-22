@@ -1,3 +1,4 @@
+using Infrastructure.Helpers;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -15,6 +16,7 @@ namespace CarCompany.UI.Controllers
 
         public IActionResult Index()
         {
+            IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
             return View();
         }
 

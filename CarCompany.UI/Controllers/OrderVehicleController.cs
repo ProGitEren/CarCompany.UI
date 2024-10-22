@@ -4,6 +4,7 @@
 using AutoMapper;
 using Infrastructure.DTO.DTO_OrderVehicles;
 using Infrastructure.Helpers;
+using Infrastructure.Interfaces;
 using Infrastructure.Models.ViewModels.OrderVehicles;
 using Infrastructure.Models.ViewModels.VehicleModels;
 using Infrastructure.Params;
@@ -12,20 +13,21 @@ using Infrastucture.Helpers;
 using Infrastucture.Params;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CarCompany.UI.Controllers
 {
     public class OrderVehicleController : Controller
     {
-        //private readonly VehicleService _vehicleService;
-        private readonly OrderVehicleService _orderVehicleService;
+        private readonly IVehicleService _vehicleService;
+        private readonly IOrderVehicleService _orderVehicleService;
         private readonly IMapper _mapper;
         private readonly Serilog.ILogger _logger;
 
 
-        public OrderVehicleController(/*VehicleService vehicleService,*/ IMapper mapper, Serilog.ILogger logger, OrderVehicleService ordervehicleservice)
+        public OrderVehicleController(IVehicleService vehicleService,IMapper mapper, Serilog.ILogger logger, IOrderVehicleService ordervehicleservice)
         {
-            //_vehicleService = vehicleService;
+            _vehicleService = vehicleService;
             _mapper = mapper;
             _logger = logger;
             _orderVehicleService = ordervehicleservice;
@@ -78,13 +80,17 @@ namespace CarCompany.UI.Controllers
                 }
                 _logger.Information("Order Vehicle retrieval successful.");
                 var model = _mapper.Map<Pagination<OrderVehicleViewModel>>(result);
+
+                IndexPageErrorsHelper.ShowTempDataErrors(ModelState, TempData);
                 return View(model);
+
             }
             catch (Exception ex)
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "GetOrderVehicles");
             }
-
+            
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("Index", "Home");
         }
 
@@ -139,15 +145,18 @@ namespace CarCompany.UI.Controllers
                     ModelState.AddModelError("", "The Order Vehicle could not be found.");
                     _logger.Warning("Order Vehicle retrieval failed.");
                 }
-                model.AddFile = new AddFileViewModel { Id = model.Id};
+                model.AddFile = new AddFileViewModel { Id = model.Id };
                 _logger.Information("Order Vehicle retrieval successful.");
             }
             catch (Exception ex)
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "UpdateOrderVehicle");
             }
+            if (ModelState.IsValid)
+                return View(model);
 
-            return View(model);
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
         }
 
         [HttpPost]
@@ -191,7 +200,8 @@ namespace CarCompany.UI.Controllers
                             
                         }
                     }
-                    return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
+                    if(ModelState.IsValid)
+                        return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
                 }
                 catch (Exception ex)
                 {
@@ -203,7 +213,7 @@ namespace CarCompany.UI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admi,Sellen")]
+        [Authorize(Roles = "Admin,Sellen")]
         public async Task<IActionResult> Delete(int? Id)
         {
             var model = new OrderVehicleViewModel();
@@ -223,13 +233,17 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteORderVehicle");
             }
 
-            return View(model);
+            if (ModelState.IsValid)
+                return View(model);
+
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+            return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
         }
 
         [HttpPost]
         public async Task<IActionResult> DeletePost(int? Id)
         {
-
+            
             try
             {
                 var stringresult = await _orderVehicleService.DeleteOrderVehicleAsync(Id);
@@ -246,8 +260,11 @@ namespace CarCompany.UI.Controllers
             {
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteORderVehicle");
             }
-
+            
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
+
+
         }
 
 
@@ -255,7 +272,12 @@ namespace CarCompany.UI.Controllers
 
         public async Task<IActionResult> AddFile(AddFileViewModel model)
         {
-            if (model.Id == null) { return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle"); }
+            if (model.Id == null)
+            {
+                ModelState.AddModelError("", "The Id of the order Vehicle is not recevived");
+                IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
+                return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
+            }
             return View(model);
         }
 
@@ -275,6 +297,7 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "AddFile");
 
             }
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
         }
 
@@ -294,7 +317,40 @@ namespace CarCompany.UI.Controllers
                 ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DeleteFile");
 
             }
+            IndexPageErrorsHelper.TempDataErrors(ModelState, TempData);
             return RedirectToAction("PaginatedOrderVehicles", "OrderVehicle");
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Details(int? Id)
+        {
+            var model = new OrderVehicleDetailsViewModel();
+            try
+            {
+                var ordervehiclemodel = await _orderVehicleService.GetOrderVehicleAsync(Id);
+                if (ordervehiclemodel == null)
+                {
+                    ModelState.AddModelError("", "The Order Vehicle could not be found.");
+                    _logger.Warning("Order Vehicle retrieval failed.");
+
+                }
+                var vehiclemodel = await _vehicleService.GetVehicleAsync(ordervehiclemodel.VehicleId);
+                if (vehiclemodel == null)
+                {
+                    ModelState.AddModelError("", "The Vehicle could not be found.");
+                    _logger.Warning("Vehicle retrieval failed.");
+
+                }
+                model.OrderVehicle = ordervehiclemodel;
+                model.Vehicle = vehiclemodel;
+            }
+            catch (Exception ex)
+            {
+                ExceptionHelper.HandleException(ex, null, _logger, ModelState, "DetailsOrderVehicle");
+            }
+
+            return View(model);
         }
 
 

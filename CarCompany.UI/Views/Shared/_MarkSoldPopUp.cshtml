@@ -1,0 +1,60 @@
+﻿<!-- Modal -->
+<div class="modal fade" id="confirmStatusChangeModal" tabindex="-1" aria-labelledby="confirmStatusChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmStatusChangeModalLabel">Confirm Status Change</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to change the status of this order to "Sold"?</p>
+                <form id="statusChangeForm" method="get" asp-action="StatusSold" asp-controller="Order">
+                    <input type="hidden" name="Id" id="orderIdInput" />
+                    <div class="mb-3">
+                        <label for="buyerEmailInput" class="form-label">Buyer Email</label>
+                        <input type="email" name="buyerEmail" id="buyerEmailInput" class="form-control" placeholder="Enter Buyer Email" required />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-outline-dark" form="statusChangeForm">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    /* Center the modal vertically and horizontally */
+    .modal {
+        text-align: center;
+        padding: 0 !important;
+    }
+
+        .modal:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-right: -4px;
+        }
+
+    .modal-dialog {
+        display: inline-block;
+        text-align: left;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('confirmStatusChangeModal');
+        modal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget; // Button that triggered the modal
+            var orderId = button.getAttribute('data-order-id'); // Get order ID from data attribute
+            var orderIdInput = document.getElementById('orderIdInput');
+            orderIdInput.value = orderId; // Set order ID in hidden input field
+        });
+    });
+</script>

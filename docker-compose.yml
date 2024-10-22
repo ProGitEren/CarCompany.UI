@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  carcompany.ui: 
+    image: ${DOCKER_REGISTRY-}carcompanyui
+    build:
+      context: CarCompany.UI
+      dockerfile: Dockerfile
+    ports:
+     - "5000:5000"
+     - "5001:5001"

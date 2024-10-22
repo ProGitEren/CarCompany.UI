@@ -1,0 +1,106 @@
+﻿@using System.Security.Claims
+@model OrderVehicleDetailsViewModel
+
+<div class="container mt-5">
+    <!-- Title Section -->
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-dark" style="text-shadow: 2px 2px 4px #000;">@Model.Vehicle.ModelName</h1>
+    </div>
+
+    <div class="card bg-dark text-white mb-5" style="border-radius: 20px;">
+        <div class="row g-0">
+            <!-- Pictures Section -->
+            <div class="col-md-8">
+                @if (Model.OrderVehicle.PicturePaths != null && Model.OrderVehicle.PicturePaths.Any())
+                {
+                    <div id="vehicleCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < Model.OrderVehicle.PicturePaths.Count; i++)
+                            {
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <img src="@Model.OrderVehicle.PicturePaths[i]" class="d-block w-100" alt="Vehicle Picture" style="height: 500px; object-fit: cover;">
+                                </div>
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#vehicleCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#vehicleCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span id="imageCounter" style="color: #7b8ab8;">1 / @Model.OrderVehicle.PicturePaths.Count</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center">
+                        <p class="text-muted">No images available.</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Details Section -->
+            <div class="col-md-4">
+                <div class="details-container p-4">
+                    <!-- Order Information -->
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Price</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.OrderVehicle.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</p>
+                    </div>
+                    <hr class="border-secondary">
+
+                    <!-- Vehicle Information -->
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">VIN</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.Vehicle.Vin</p>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Engine Name</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.Vehicle.EngineName</p>
+                    </div>
+                    <hr class="border-secondary">
+                    <div class="form-group mb-4">
+                        <label class="form-label text-uppercase text-muted" style="font-weight: bold; font-size: 1.3rem;">Driven KM</label>
+                        <p class="form-control-plaintext" style="font-size: 1.5rem;">@Model.Vehicle.DrivenKM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conditional Back to List Button -->
+    <div class="text-center mt-4">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Order" asp-action="PaginatedOrders" class="btn bg-dark btn-lg" style="width: 200px;">Back to List</a>
+        }
+        else if (User.IsInRole("Seller"))
+        {
+            <a asp-controller="Order" asp-action="PaginatedOrders" class="btn bg-dark btn-lg" style="width: 200px;">Back to List</a>
+        }
+        else if (User.IsInRole("Buyer"))
+        {
+            <a asp-controller="Order" asp-action="PaginatedOrders" asp-route-buyerEmail="@User.Claims.Where(x => x.Type == ClaimTypes.Name).FirstOrDefault()?.Value" class="btn bg-dark btn-lg" style="width: 200px;">Back to List</a>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const carousel = document.querySelector('#vehicleCarousel');
+            const imageCounter = document.getElementById('imageCounter');
+            const totalImages = @Model.OrderVehicle.PicturePaths?.Count ?? 0;
+
+            carousel.addEventListener('slide.bs.carousel', function (event) {
+                const currentIndex = event.to + 1; // carousel events are zero-indexed
+                imageCounter.innerText = `${currentIndex} / ${totalImages}`;
+            });
+        });
+    </script>
+}
